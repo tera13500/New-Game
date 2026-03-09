@@ -180,7 +180,7 @@ text = "Day 1 / Tick 0"
 [node name="VersionLabel" type="Label" parent="Root/Layout/TopBar/TopRow/TimeCard/TimeVBox"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "v1.1.7"
+text = "v1.1.8"
 modulate = Color(0.72, 0.78, 0.9, 1)
 
 [node name="MainRow" type="HBoxContainer" parent="Root/Layout"]
@@ -273,6 +273,12 @@ layout_mode = 2
 autowrap_mode = 2
 text = "권장 액션"
 
+[node name="RecentLogLabel" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 2
+text = "최근 로그"
+
 [node name="ActionPanel" parent="Root/Layout" instance=ExtResource("6_actions")]
 unique_name_in_owner = true
 layout_mode = 2
@@ -283,3 +289,47 @@ unique_name_in_owner = true
 unique_name_in_owner = true
 [node name="CodexPopup" parent="." instance=ExtResource("10_codex")]
 unique_name_in_owner = true
+
+[node name="TutorialOverlay" type="ColorRect" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.68)
+
+[node name="TutorialPanel" type="PanelContainer" parent="TutorialOverlay"]
+offset_left = 390.0
+offset_top = 220.0
+offset_right = 1210.0
+offset_bottom = 690.0
+
+[node name="TutorialVBox" type="VBoxContainer" parent="TutorialOverlay/TutorialPanel"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TutorialTitle" type="Label" parent="TutorialOverlay/TutorialPanel/TutorialVBox"]
+layout_mode = 2
+text = "튜토리얼"
+
+[node name="TutorialText" type="Label" parent="TutorialOverlay/TutorialPanel/TutorialVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 2
+text = "튜토리얼 내용"
+
+[node name="TutorialButtons" type="HBoxContainer" parent="TutorialOverlay/TutorialPanel/TutorialVBox"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 8
+
+[node name="TutorialSkipButton" type="Button" parent="TutorialOverlay/TutorialPanel/TutorialVBox/TutorialButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "건너뛰기"
+
+[node name="TutorialNextButton" type="Button" parent="TutorialOverlay/TutorialPanel/TutorialVBox/TutorialButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "다음"

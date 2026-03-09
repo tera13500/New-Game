@@ -1,7 +1,7 @@
 extends Node
 class_name GameState
 
-const GAME_VERSION: String = "1.1.7"
+const GAME_VERSION: String = "1.1.8"
 const FLOOR_COUNT: int = 5
 const ELEVATOR_COUNT: int = 2
 const INSPECTION_INTERVAL_DAYS: int = 4

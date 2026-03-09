@@ -1,25 +1,23 @@
-# Elevator Safety Tycoon v1.1.7
+# Elevator Safety Tycoon v1.1.8
 
 Godot 4.6.x + GDScript 기반 데스크톱 엘리베이터 운영/안전관리 시뮬레이션 게임입니다.
 
-## v1.1.7 핵심 변경
-- 파싱/타입 추론 안정화(명시 타입 보강, `:=` 제거)
-- fault 이벤트 긴급수리 시 실제 고장 해제 로직 연결
-- 이벤트/업그레이드/도감 팝업 중 라운드 일시정지 일관화
-- safety_score 자동 회복 완화(행동 기반 상승 구조 강화)
-- 운영 성과 보상 루프 강화(무고장/민원 억제/점검률/만족도/목표 보상)
-- 사용자 노출 텍스트에서 내부 ID 제거(장치명 한글화)
-- BuildingView 상황판 시각 polish(상태 마커/게이지/선택 강조/pulse)
+## v1.1.8 핵심 개선
+- 타이틀 화면 추가: 게임 설명/시작하기/튜토리얼 동선 제공
+- 단계형 온보딩 오버레이 추가: 초보자 첫 진입 혼란 완화
+- 이벤트 등급 정리: Major는 팝업, Minor는 자동 처리 + 최근 로그
+- 팝업 빈도 완화: 일일 Major 팝업 수 제한 + 틱 쿨다운
+- 메인 화면 로그 패널 추가: 최근 이벤트 5개를 스크롤 없이 확인
+- UX 안정화: 팝업/튜토리얼/도감 중 라운드 일시정지 일관성 유지
+- 버전 표기/프로젝트 메타를 1.1.8로 업데이트
 
 ## 실행
 1. Godot 4.6.x로 프로젝트 열기
-2. `scenes/Main.tscn` 실행
+2. 타이틀 화면(`scenes/TitleScreen.tscn`)에서 `튜토리얼 시작` 또는 `바로 시작` 선택
 
 ## 주요 구조
-- `scripts/GameState.gd`: 운영/부품/캠페인/목표/보상/리포트 계산
-- `scripts/EventManager.gd`: 타겟 호기 기반 이벤트 생성
-- `scripts/Main.gd`: UI/팝업 흐름 제어 및 라운드 정지/재개
-- `scripts/ui/BuildingView.gd`: 중앙 상황판 시각화
-- `scripts/ui/EventPopup.gd`: 이벤트 선택 UI
-- `scripts/ui/RoundReportPopup.gd`: 운영 리포트 UI
-- `scripts/ui/ComponentCodexPopup.gd`: 부품 도감 UI
+- `scenes/TitleScreen.tscn`: 타이틀/게임 소개/진입 동선
+- `scripts/ui/TitleScreen.gd`: 시작 버튼 흐름 제어
+- `scripts/Main.gd`: 온보딩, 이벤트 팝업 빈도 제어, 최근 로그
+- `scripts/EventManager.gd`: Major/Minor 이벤트 분류 데이터
+- `scripts/GameState.gd`: 핵심 시뮬레이션 상태/행동 로직

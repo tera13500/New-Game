@@ -11,6 +11,10 @@ extends Control
 @onready var report_popup: RoundReportPopup = %RoundReportPopup
 @onready var codex_popup: ComponentCodexPopup = %CodexPopup
 
+@onready var tutorial_overlay: Control = %TutorialOverlay
+@onready var tutorial_text: Label = %TutorialText
+@onready var recent_log_label: Label = %RecentLogLabel
+
 @onready var money_value: Label = %MoneyValue
 @onready var safety_value: Label = %SafetyValue
 @onready var satisfaction_value: Label = %SatisfactionValue
@@ -33,6 +37,16 @@ extends Control
 
 var _selected_index: int = 0
 var _selected_campaign_id: String = "door_safety"
+var _event_cooldown_ticks: int = 0
+var _major_event_count_day: int = 0
+var _recent_logs: Array[String] = []
+var _tutorial_step: int = 0
+var _tutorial_pages: Array[String] = [
+	"환영합니다. 이 게임은 엘리베이터 2대를 운영하며 안전과 서비스 품질을 동시에 관리하는 시뮬레이션입니다.",
+	"상단 카드: 예산/안전/만족/점검률/민원/시간을 확인합니다.",
+	"중앙 상황판: 층별 대기와 A/B 호기 상태를 봅니다.\n우측 패널: 선택 호기의 취약 부품과 권장 액션을 확인합니다.",
+	"하단 액션으로 정기점검, 예방정비, 캠페인, 업그레이드를 실행하세요.\n중요 이벤트는 팝업, 경미 이벤트는 로그로 안내됩니다."
+]
 
 func _ready() -> void:
 	randomize()
@@ -40,7 +54,13 @@ func _ready() -> void:
 	_connect_signals()
 	_populate_selector()
 	_refresh_all()
-	round_manager.start()
+	if AppState.start_with_tutorial:
+		round_manager.stop()
+		tutorial_overlay.visible = true
+		_render_tutorial_step()
+	else:
+		tutorial_overlay.visible = false
+		round_manager.start()
 
 func _connect_signals() -> void:
 	round_manager.tick_advanced.connect(_on_tick)
@@ -54,33 +74,48 @@ func _connect_signals() -> void:
 	game_state.state_changed.connect(_refresh_all)
 	unlock_manager.codex_unlocked.connect(_on_codex_unlocked)
 	codex_popup.popup_closed.connect(func() -> void: round_manager.start())
+	%TutorialNextButton.pressed.connect(_on_tutorial_next)
+	%TutorialSkipButton.pressed.connect(_on_tutorial_skip)
 
 func _on_tick() -> void:
 	game_state.advance_tick()
+	if _event_cooldown_ticks > 0:
+		_event_cooldown_ticks -= 1
+		return
 	var event_data: EventData = event_manager.get_event_for_state(game_state)
-	if event_data != null:
+	if event_data == null:
+		return
+	if event_data.event_level == "major" and _major_event_count_day < 2:
+		_major_event_count_day += 1
+		_event_cooldown_ticks = 2
 		round_manager.stop()
 		event_popup.show_event(event_data)
+	else:
+		_apply_minor_event(event_data)
+
+func _apply_minor_event(event_data: EventData) -> void:
+	if event_data.options.size() > 0:
+		var first_option: Dictionary = event_data.options[0]
+		var effect: Dictionary = first_option.get("effect", {})
+		game_state.apply_effect(effect, event_data.target_elevator_id)
+	_add_recent_log("%s (자동 처리)" % event_data.title)
 
 func _on_day_finished() -> void:
 	round_manager.stop()
+	_major_event_count_day = 0
 	unlock_manager.evaluate_titles(game_state)
 	var summary: Dictionary = game_state.finish_day()
 	report_popup.show_report(summary, game_state)
 
 func _on_action_requested(action_id: String) -> void:
 	match action_id:
-		"inspection":
-			game_state.perform_regular_inspection(_selected_index)
-		"preventive":
-			game_state.perform_preventive_maintenance(_selected_index)
-		"emergency":
-			game_state.perform_emergency_repair(_selected_index)
+		"inspection": game_state.perform_regular_inspection(_selected_index)
+		"preventive": game_state.perform_preventive_maintenance(_selected_index)
+		"emergency": game_state.perform_emergency_repair(_selected_index)
 		"campaign":
 			if not game_state.run_safety_campaign(_selected_campaign_id):
-				game_state.round_log.append("캠페인 적용 실패: 예산 부족")
-		"upgrade":
-			_show_upgrade_choices()
+				_add_recent_log("캠페인 적용 실패: 예산 부족")
+		"upgrade": _show_upgrade_choices()
 
 func _show_upgrade_choices() -> void:
 	round_manager.stop()
@@ -91,28 +126,16 @@ func _show_upgrade_choices() -> void:
 		{"label": "내구성 강화 패키지 (-3400)", "upgrade_id": "durability_pack"},
 		{"label": "수용량 최적화 (-2800)", "upgrade_id": "capacity_tuning"}
 	]
-	var component_tags: Array[String] = []
-	var campaign_tags: Array[String] = []
-	var popup_event: EventData = EventData.new(
-		"upgrade_select",
-		"업그레이드 선택",
-		"선택한 엘리베이터에 설치할 업그레이드를 고르세요.",
-		"normal",
-		"action_button",
-		options,
-		component_tags,
-		campaign_tags,
-		"",
-		"",
-		_selected_index + 1
-	)
+	var popup_event: EventData = EventData.new("upgrade_select", "업그레이드 선택", "선택한 엘리베이터에 설치할 업그레이드를 고르세요.", "normal", "action_button", options, [], [], "", "", _selected_index + 1, "major")
 	event_popup.show_event(popup_event)
 
 func _on_event_option_chosen(effect: Dictionary, event_data: EventData) -> void:
 	if effect.has("upgrade_id"):
 		var result: Dictionary = game_state.apply_upgrade_with_feedback(_selected_index, str(effect["upgrade_id"]))
 		if not bool(result.get("ok", false)):
-			game_state.round_log.append(str(result.get("message", "업그레이드 적용 실패")))
+			_add_recent_log(str(result.get("message", "업그레이드 적용 실패")))
+		else:
+			_add_recent_log("업그레이드 적용 완료")
 		if bool(result.get("ok", false)) and str(effect["upgrade_id"]) == "door_sensor":
 			unlock_manager.unlock_component("door_sensor")
 		_refresh_all()
@@ -125,6 +148,7 @@ func _on_event_option_chosen(effect: Dictionary, event_data: EventData) -> void:
 	else:
 		game_state.apply_effect(effect, event_data.target_elevator_id)
 
+	_add_recent_log(event_data.title)
 	var unlocked_any: bool = false
 	for cid: String in event_data.component_tags:
 		if not unlock_manager.unlocked_components.has(cid):
@@ -158,6 +182,7 @@ func _refresh_all() -> void:
 	var elevator: ElevatorData = game_state.get_elevator(_selected_index)
 	if elevator != null:
 		building_view.set_selected_elevator(elevator.id)
+	recent_log_label.text = "최근 로그\n" + "\n".join(_recent_logs)
 
 func _refresh_top_bar() -> void:
 	money_value.text = "%s원" % _format_number(game_state.money)
@@ -199,16 +224,16 @@ func _build_component_summary(elevator: ElevatorData) -> String:
 
 func _build_recommendation(elevator: ElevatorData) -> String:
 	if elevator.status == "fault":
-		return "권장: 긴급수리 + 비상통화 장치 점검"
+		return "긴급수리 + 비상통화 장치 점검"
 	if game_state.day - elevator.last_inspection_day > GameState.INSPECTION_INTERVAL_DAYS:
-		return "권장: 정기점검으로 제어/제동계 안정화"
+		return "정기점검으로 제어/제동계 안정화"
 	if elevator.component_state_label("door_sensor") != "정상":
-		return "권장: 도어 센서 정비 + 문 끼임 주의 캠페인"
+		return "도어 센서 정비 + 문 끼임 주의 캠페인"
 	if elevator.wear > 70.0:
-		return "권장: 예방정비로 장기 리스크 절감"
+		return "예방정비로 장기 리스크 절감"
 	if game_state.complaints > 6:
-		return "권장: 과밀 탑승 방지 캠페인과 속도 개선 병행"
-	return "권장: 피크 시간 대비 균형 운영 유지"
+		return "과밀 방지 캠페인 + 속도 개선"
+	return "피크 시간 대비 균형 운영 유지"
 
 func _open_codex() -> void:
 	round_manager.stop()
@@ -216,6 +241,29 @@ func _open_codex() -> void:
 
 func _on_codex_unlocked(_component_id: String) -> void:
 	_open_codex()
+
+func _on_tutorial_next() -> void:
+	_tutorial_step += 1
+	if _tutorial_step >= _tutorial_pages.size():
+		_finish_tutorial()
+		return
+	_render_tutorial_step()
+
+func _on_tutorial_skip() -> void:
+	_finish_tutorial()
+
+func _render_tutorial_step() -> void:
+	tutorial_text.text = _tutorial_pages[_tutorial_step]
+
+func _finish_tutorial() -> void:
+	AppState.start_with_tutorial = false
+	tutorial_overlay.visible = false
+	round_manager.start()
+
+func _add_recent_log(msg: String) -> void:
+	_recent_logs.push_front("- %s" % msg)
+	if _recent_logs.size() > 5:
+		_recent_logs.resize(5)
 
 func _format_number(value: int) -> String:
 	var text: String = str(value)

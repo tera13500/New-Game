@@ -12,6 +12,7 @@ var campaign_tags: Array[String]
 var recommended_action: String
 var unlock_component_id: String
 var target_elevator_id: int
+var event_level: String
 
 func _init(
 	p_event_id: String,
@@ -24,7 +25,8 @@ func _init(
 	p_campaign_tags: Array[String] = [],
 	p_recommended_action: String = "",
 	p_unlock_component_id: String = "",
-	p_target_elevator_id: int = -1
+	p_target_elevator_id: int = -1,
+	p_event_level: String = "major"
 ) -> void:
 	event_id = p_event_id
 	title = p_title
@@ -37,3 +39,4 @@ func _init(
 	recommended_action = p_recommended_action
 	unlock_component_id = p_unlock_component_id
 	target_elevator_id = p_target_elevator_id
+	event_level = p_event_level
