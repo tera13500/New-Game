@@ -85,25 +85,35 @@ func _on_action_requested(action_id: String) -> void:
 func _show_upgrade_choices() -> void:
 	round_manager.stop()
 	var options: Array[Dictionary] = [
-		{"label": "문 센서 개선 (-2600)", "upgrade_id": "door_sensor"},
-		{"label": "속도 드라이브 개선 (-2800)", "upgrade_id": "speed_drive"},
-		{"label": "유지관리 효율 팩 (-3000)", "upgrade_id": "maintenance_suite"},
-		{"label": "내구성 강화 (-3400)", "upgrade_id": "durability_pack"},
-		{"label": "수용량 개선 (-2800)", "upgrade_id": "capacity_tuning"}
+		{"label": "도어 센서 개선 (-2600)", "upgrade_id": "door_sensor"},
+		{"label": "속도 제어 드라이브 개선 (-2800)", "upgrade_id": "speed_drive"},
+		{"label": "유지관리 패키지 적용 (-3000)", "upgrade_id": "maintenance_suite"},
+		{"label": "내구성 강화 패키지 (-3400)", "upgrade_id": "durability_pack"},
+		{"label": "수용량 최적화 (-2800)", "upgrade_id": "capacity_tuning"}
 	]
-	var popup_event: EventData = EventData.new("upgrade_select", "업그레이드 선택", "선택한 엘리베이터에 설치할 업그레이드를 고르세요.", "normal", "action_button", [], [], "")
-	for option: Dictionary in options:
-		popup_event.options.append({
-			"label": str(option["label"]),
-			"effect": {"log": "업그레이드 선택"},
-			"upgrade_id": str(option["upgrade_id"])
-		})
+	var component_tags: Array[String] = []
+	var campaign_tags: Array[String] = []
+	var popup_event: EventData = EventData.new(
+		"upgrade_select",
+		"업그레이드 선택",
+		"선택한 엘리베이터에 설치할 업그레이드를 고르세요.",
+		"normal",
+		"action_button",
+		options,
+		component_tags,
+		campaign_tags,
+		"",
+		"",
+		_selected_index + 1
+	)
 	event_popup.show_event(popup_event)
 
 func _on_event_option_chosen(effect: Dictionary, event_data: EventData) -> void:
 	if effect.has("upgrade_id"):
-		var ok: bool = game_state.apply_upgrade(_selected_index, str(effect["upgrade_id"]))
-		if ok and str(effect["upgrade_id"]) == "door_sensor":
+		var result: Dictionary = game_state.apply_upgrade_with_feedback(_selected_index, str(effect["upgrade_id"]))
+		if not bool(result.get("ok", false)):
+			game_state.round_log.append(str(result.get("message", "업그레이드 적용 실패")))
+		if bool(result.get("ok", false)) and str(effect["upgrade_id"]) == "door_sensor":
 			unlock_manager.unlock_component("door_sensor")
 		_refresh_all()
 		round_manager.start()
@@ -115,9 +125,14 @@ func _on_event_option_chosen(effect: Dictionary, event_data: EventData) -> void:
 	else:
 		game_state.apply_effect(effect, event_data.target_elevator_id)
 
+	var unlocked_any: bool = false
 	for cid: String in event_data.component_tags:
+		if not unlock_manager.unlocked_components.has(cid):
+			unlocked_any = true
 		unlock_manager.unlock_component(cid)
-	round_manager.start()
+
+	if not unlocked_any:
+		round_manager.start()
 
 func _populate_selector() -> void:
 	elevator_selector.clear()
@@ -161,7 +176,7 @@ func _refresh_right_panel() -> void:
 	floor_value.text = "%d층" % elevator.current_floor
 	wear_value.text = "%.1f%%" % elevator.wear
 	risk_value.text = "%.1f%%" % elevator.breakdown_risk
-	inspection_day_value.text = "%d일 전" % (game_state.day - elevator.last_inspection_day)
+	inspection_day_value.text = "%d일 전" % max(0, game_state.day - elevator.last_inspection_day)
 	work_summary.text = "목표층 %d층 / 부하 %.0f%% / 속도 %.2f / 내구 %.2f" % [elevator.target_floor, elevator.load * 100.0, elevator.speed_factor, elevator.durability_factor]
 	upgrades_value.text = "업그레이드: %s" % elevator.installed_upgrades_text()
 	component_summary.text = _build_component_summary(elevator)
@@ -178,6 +193,8 @@ func _build_component_summary(elevator: ElevatorData) -> String:
 		var component_name: String = game_state.component_display_name(cid)
 		var state: String = elevator.component_state_label(cid)
 		lines.append("%s: %s" % [component_name, state])
+	if lines.is_empty():
+		return "핵심 장치\n해금된 장치 없음"
 	return "핵심 장치\n" + "\n".join(lines)
 
 func _build_recommendation(elevator: ElevatorData) -> String:

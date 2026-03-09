@@ -17,8 +17,8 @@ func _pick_condition_event(game_state: GameState) -> EventData:
 				"fault", "elevator_fault",
 				[
 					{"label":"긴급수리 즉시 진행 (-5200)", "effect":{"money":0, "log":"고장 즉시 대응"}, "fault_action":"immediate"},
-					{"label":"임시 격리 후 반나절 지연", "effect":{"money":-2600, "safety":-3.0, "satisfaction":-5.0, "complaints":2, "risk":8.0, "log":"고장 대응 지연"}, "fault_action":"delay"},
-					{"label":"안내 강화 후 외주 수리", "effect":{"money":-3800, "safety":0.5, "satisfaction":-1.0, "complaints":0, "risk":2.0, "log":"외주 수리 선택"}, "fault_action":"outsource"}
+					{"label":"임시 격리 후 반나절 지연", "effect":{"log":"고장 대응 지연"}, "fault_action":"delay"},
+					{"label":"안내 강화 후 외주 수리", "effect":{"log":"외주 수리 선택"}, "fault_action":"outsource"}
 				],
 				["emergency_call", "brake_system", "governor"], ["emergency_guide"], "긴급수리", "governor", elevator.id
 			)

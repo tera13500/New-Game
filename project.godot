@@ -9,11 +9,11 @@
 config_version=5
 
 [application]
-config/name="Elevator Safety Tycoon v1.1.6"
+config/name="Elevator Safety Tycoon v1.1.7"
 run/main_scene="res://scenes/Main.tscn"
 config/features=PackedStringArray("4.6")
 config/icon="res://icon.svg"
-config/description="Version 1.1.6"
+config/description="Version 1.1.7"
 
 [display]
 window/size/viewport_width=1600

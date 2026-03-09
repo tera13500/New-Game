@@ -12,10 +12,12 @@ var _accum: float = 0.0
 var _tick_counter: int = 0
 
 func start() -> void:
+	_accum = 0.0
 	_running = true
 
 func stop() -> void:
 	_running = false
+	_accum = 0.0
 
 func _process(delta: float) -> void:
 	if not _running:

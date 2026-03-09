@@ -180,7 +180,7 @@ text = "Day 1 / Tick 0"
 [node name="VersionLabel" type="Label" parent="Root/Layout/TopBar/TopRow/TimeCard/TimeVBox"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "v1.1.6"
+text = "v1.1.7"
 modulate = Color(0.72, 0.78, 0.9, 1)
 
 [node name="MainRow" type="HBoxContainer" parent="Root/Layout"]

@@ -1,7 +1,7 @@
 extends Node
 class_name GameState
 
-const GAME_VERSION: String = "1.1.6"
+const GAME_VERSION: String = "1.1.7"
 const FLOOR_COUNT: int = 5
 const ELEVATOR_COUNT: int = 2
 const INSPECTION_INTERVAL_DAYS: int = 4
@@ -49,7 +49,7 @@ func _ready() -> void:
 func seed_dummy_data() -> void:
 	elevators.clear()
 	elevators.append(ElevatorData.new(1, "A호기", 1, 30.0, 22.0, 8, 1, 1.15, 0.9))
-	elevators.append(ElevatorData.new(2, "B호기", 4, 42.0, 28.0, 10, 3, 0.92, 1.12))
+	elevators.append(ElevatorData.new(2, "B호기", 4, 42.0, 28.0, 10, 1, 0.92, 1.12))
 	floor_demands = [2, 3, 1, 4, 2]
 	round_log = ["초기 운영 상태가 설정되었습니다."]
 
@@ -222,6 +222,23 @@ func apply_upgrade(elevator_index: int, upgrade_id: String) -> bool:
 		"speed_drive": elevator.speed_factor *= 1.08
 	emit_signal("state_changed")
 	return true
+func apply_upgrade_with_feedback(elevator_index: int, upgrade_id: String) -> Dictionary:
+	var elevator: ElevatorData = get_elevator(elevator_index)
+	if elevator == null:
+		return {"ok": false, "message": "업그레이드 실패: 대상 호기를 찾을 수 없습니다."}
+	if elevator.has_upgrade(upgrade_id):
+		return {"ok": false, "message": "업그레이드 실패: 이미 설치된 항목입니다."}
+	var cost_map: Dictionary = {"door_sensor":2600, "speed_drive":2800, "maintenance_suite":3000, "durability_pack":3400, "capacity_tuning":2800}
+	var cost: int = int(cost_map.get(upgrade_id, -1))
+	if cost < 0:
+		return {"ok": false, "message": "업그레이드 실패: 적용할 수 없는 항목입니다."}
+	if money < cost:
+		return {"ok": false, "message": "업그레이드 실패: 예산이 부족합니다."}
+	var ok: bool = apply_upgrade(elevator_index, upgrade_id)
+	if not ok:
+		return {"ok": false, "message": "업그레이드 실패: 시스템 처리 중 오류가 발생했습니다."}
+	return {"ok": true, "message": "업그레이드 적용 완료"}
+
 
 func apply_effect(effect: Dictionary, target_elevator_id: int = -1) -> void:
 	money += int(effect.get("money", 0))
