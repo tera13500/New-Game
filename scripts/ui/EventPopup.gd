@@ -13,7 +13,8 @@ func show_event(event_data: EventData) -> void:
 	%PopupTitle.text = event_data.title
 	%PopupDesc.text = event_data.description
 	%Severity.text = "심각도: %s" % event_data.severity
-	%Tags.text = "관련 장치: %s" % ("없음" if event_data.component_tags.is_empty() else ", ".join(event_data.component_tags))
+	var target_text := "전체 시스템" if event_data.target_elevator_id < 0 else "대상 호기: #%d" % event_data.target_elevator_id
+	%Tags.text = "%s | 관련 장치: %s" % [target_text, ("없음" if event_data.component_tags.is_empty() else ", ".join(event_data.component_tags))]
 	%Recommend.text = "권장 액션: %s" % (event_data.recommended_action if event_data.recommended_action != "" else "상황 판단")
 	for child in %OptionList.get_children():
 		child.queue_free()

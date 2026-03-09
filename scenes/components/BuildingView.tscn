@@ -3,12 +3,12 @@
 [ext_resource type="Script" path="res://scripts/ui/BuildingView.gd" id="1_jtxjd"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
-bg_color = Color(0.082, 0.109, 0.164, 0.96)
+bg_color = Color(0.074, 0.098, 0.148, 0.96)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.23, 0.30, 0.44, 0.9)
+border_color = Color(0.25, 0.33, 0.48, 0.9)
 corner_radius_top_left = 12
 corner_radius_top_right = 12
 corner_radius_bottom_right = 12
@@ -20,6 +20,11 @@ content_margin_bottom = 14
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cab"]
 bg_color = Color(0.19, 0.76, 0.48, 0.95)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.86, 0.93, 1.0, 0.55)
 corner_radius_top_left = 6
 corner_radius_top_right = 6
 corner_radius_bottom_right = 6
@@ -37,99 +42,99 @@ layout_mode = 2
 theme_override_constants/separation = 14
 
 [node name="FloorColumn" type="VBoxContainer" parent="HBox"]
-custom_minimum_size = Vector2(130, 0)
+custom_minimum_size = Vector2(190, 0)
 layout_mode = 2
-theme_override_constants/separation = 16
+theme_override_constants/separation = 12
 
 [node name="Title" type="Label" parent="HBox/FloorColumn"]
 layout_mode = 2
-text = "건물 상태"
+text = "층별 대기 현황"
 
-[node name="Demand5" type="Label" parent="HBox/FloorColumn"]
+[node name="Row5" type="VBoxContainer" parent="HBox/FloorColumn"]
+layout_mode = 2
+[node name="Demand5" type="Label" parent="HBox/FloorColumn/Row5"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "5F 대기 0"
+text = "5F"
+[node name="Bar5" type="ColorRect" parent="HBox/FloorColumn/Row5"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(20, 7)
+layout_mode = 2
+color = Color(0.31, 0.63, 1, 1)
 
-[node name="Demand4" type="Label" parent="HBox/FloorColumn"]
+[node name="Row4" type="VBoxContainer" parent="HBox/FloorColumn"]
+layout_mode = 2
+[node name="Demand4" type="Label" parent="HBox/FloorColumn/Row4"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "4F 대기 0"
+text = "4F"
+[node name="Bar4" type="ColorRect" parent="HBox/FloorColumn/Row4"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(20, 7)
+layout_mode = 2
+color = Color(0.31, 0.63, 1, 1)
 
-[node name="Demand3" type="Label" parent="HBox/FloorColumn"]
+[node name="Row3" type="VBoxContainer" parent="HBox/FloorColumn"]
+layout_mode = 2
+[node name="Demand3" type="Label" parent="HBox/FloorColumn/Row3"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "3F 대기 0"
+text = "3F"
+[node name="Bar3" type="ColorRect" parent="HBox/FloorColumn/Row3"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(20, 7)
+layout_mode = 2
+color = Color(0.31, 0.63, 1, 1)
 
-[node name="Demand2" type="Label" parent="HBox/FloorColumn"]
+[node name="Row2" type="VBoxContainer" parent="HBox/FloorColumn"]
+layout_mode = 2
+[node name="Demand2" type="Label" parent="HBox/FloorColumn/Row2"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "2F 대기 0"
+text = "2F"
+[node name="Bar2" type="ColorRect" parent="HBox/FloorColumn/Row2"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(20, 7)
+layout_mode = 2
+color = Color(0.31, 0.63, 1, 1)
 
-[node name="Demand1" type="Label" parent="HBox/FloorColumn"]
+[node name="Row1" type="VBoxContainer" parent="HBox/FloorColumn"]
+layout_mode = 2
+[node name="Demand1" type="Label" parent="HBox/FloorColumn/Row1"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "1F 대기 0"
+text = "1F"
+[node name="Bar1" type="ColorRect" parent="HBox/FloorColumn/Row1"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(20, 7)
+layout_mode = 2
+color = Color(0.31, 0.63, 1, 1)
 
 [node name="ShaftArea" type="Control" parent="HBox"]
-custom_minimum_size = Vector2(300, 470)
+custom_minimum_size = Vector2(360, 470)
 layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="ShaftA" type="ColorRect" parent="HBox/ShaftArea"]
-offset_left = 82.0
-offset_top = 20.0
-offset_right = 144.0
+offset_left = 110.0
+offset_top = 18.0
+offset_right = 176.0
 offset_bottom = 450.0
-color = Color(0.14, 0.19, 0.28, 1)
+color = Color(0.13, 0.18, 0.27, 1)
 
 [node name="ShaftB" type="ColorRect" parent="HBox/ShaftArea"]
-offset_left = 172.0
-offset_top = 20.0
-offset_right = 234.0
+offset_left = 204.0
+offset_top = 18.0
+offset_right = 270.0
 offset_bottom = 450.0
-color = Color(0.14, 0.19, 0.28, 1)
-
-[node name="FloorGuide5" type="Label" parent="HBox/ShaftArea"]
-offset_left = 8.0
-offset_top = 30.0
-offset_right = 70.0
-offset_bottom = 55.0
-text = "5층"
-
-[node name="FloorGuide4" type="Label" parent="HBox/ShaftArea"]
-offset_left = 8.0
-offset_top = 125.0
-offset_right = 70.0
-offset_bottom = 150.0
-text = "4층"
-
-[node name="FloorGuide3" type="Label" parent="HBox/ShaftArea"]
-offset_left = 8.0
-offset_top = 220.0
-offset_right = 70.0
-offset_bottom = 245.0
-text = "3층"
-
-[node name="FloorGuide2" type="Label" parent="HBox/ShaftArea"]
-offset_left = 8.0
-offset_top = 315.0
-offset_right = 70.0
-offset_bottom = 340.0
-text = "2층"
-
-[node name="FloorGuide1" type="Label" parent="HBox/ShaftArea"]
-offset_left = 8.0
-offset_top = 410.0
-offset_right = 70.0
-offset_bottom = 435.0
-text = "1층"
+color = Color(0.13, 0.18, 0.27, 1)
 
 [node name="CabA" type="PanelContainer" parent="HBox/ShaftArea"]
 unique_name_in_owner = true
-offset_left = 90.0
-offset_top = 420.0
-offset_right = 136.0
-offset_bottom = 446.0
+offset_left = 117.0
+offset_top = 404.0
+offset_right = 169.0
+offset_bottom = 432.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_cab")
 
 [node name="CabALabel" type="Label" parent="HBox/ShaftArea/CabA"]
@@ -139,12 +144,20 @@ text = "A"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="MarkerA" type="Label" parent="HBox/ShaftArea"]
+unique_name_in_owner = true
+offset_left = 173.0
+offset_top = 404.0
+offset_right = 200.0
+offset_bottom = 430.0
+text = "●"
+
 [node name="CabB" type="PanelContainer" parent="HBox/ShaftArea"]
 unique_name_in_owner = true
-offset_left = 180.0
-offset_top = 420.0
-offset_right = 226.0
-offset_bottom = 446.0
+offset_left = 211.0
+offset_top = 404.0
+offset_right = 263.0
+offset_bottom = 432.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_cab")
 
 [node name="CabBLabel" type="Label" parent="HBox/ShaftArea/CabB"]
@@ -153,3 +166,42 @@ layout_mode = 2
 text = "B"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="MarkerB" type="Label" parent="HBox/ShaftArea"]
+unique_name_in_owner = true
+offset_left = 267.0
+offset_top = 404.0
+offset_right = 294.0
+offset_bottom = 430.0
+text = "●"
+
+[node name="FloorGuide5" type="Label" parent="HBox/ShaftArea"]
+offset_left = 24.0
+offset_top = 26.0
+offset_right = 74.0
+offset_bottom = 50.0
+text = "5층"
+[node name="FloorGuide4" type="Label" parent="HBox/ShaftArea"]
+offset_left = 24.0
+offset_top = 118.0
+offset_right = 74.0
+offset_bottom = 142.0
+text = "4층"
+[node name="FloorGuide3" type="Label" parent="HBox/ShaftArea"]
+offset_left = 24.0
+offset_top = 210.0
+offset_right = 74.0
+offset_bottom = 234.0
+text = "3층"
+[node name="FloorGuide2" type="Label" parent="HBox/ShaftArea"]
+offset_left = 24.0
+offset_top = 302.0
+offset_right = 74.0
+offset_bottom = 326.0
+text = "2층"
+[node name="FloorGuide1" type="Label" parent="HBox/ShaftArea"]
+offset_left = 24.0
+offset_top = 394.0
+offset_right = 74.0
+offset_bottom = 418.0
+text = "1층"

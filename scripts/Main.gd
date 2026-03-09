@@ -96,7 +96,7 @@ func _on_event_option_chosen(effect: Dictionary, event_data: EventData) -> void:
 		_refresh_all()
 		round_manager.start()
 		return
-	game_state.apply_effect(effect)
+	game_state.apply_effect(effect, event_data.target_elevator_id)
 	for cid in event_data.component_tags:
 		unlock_manager.unlock_component(cid)
 	round_manager.start()
@@ -110,12 +110,18 @@ func _populate_selector() -> void:
 func _on_elevator_selected(index: int) -> void:
 	_selected_index = index
 	_refresh_right_panel()
+	var e := game_state.get_elevator(_selected_index)
+	if e != null:
+		building_view.set_selected_elevator(e.id)
 
 func _refresh_all() -> void:
 	_refresh_top_bar()
 	_refresh_right_panel()
 	building_view.update_demands(game_state.floor_demands)
 	building_view.update_elevators(game_state.elevators, func(status: String) -> Color: return game_state.get_status_color(status))
+	var e := game_state.get_elevator(_selected_index)
+	if e != null:
+		building_view.set_selected_elevator(e.id)
 
 func _refresh_top_bar() -> void:
 	money_value.text = "%s원" % _format_number(game_state.money)
@@ -135,11 +141,11 @@ func _refresh_right_panel() -> void:
 	wear_value.text = "%.1f%%" % elevator.wear
 	risk_value.text = "%.1f%%" % elevator.breakdown_risk
 	inspection_day_value.text = "%d일 전" % (game_state.day - elevator.last_inspection_day)
-	work_summary.text = "목표층 %d층, 현재부하 %.0f%%" % [elevator.target_floor, elevator.load * 100.0]
+	work_summary.text = "목표층 %d층 / 부하 %.0f%% / 속도계수 %.2f / 내구계수 %.2f" % [elevator.target_floor, elevator.load * 100.0, elevator.speed_factor, elevator.durability_factor]
 	upgrades_value.text = "업그레이드: %s" % elevator.installed_upgrades_text()
 	component_summary.text = _build_component_summary(elevator)
 	campaign_summary.text = "활성 캠페인: %s" % " | ".join(game_state.get_campaign_status_lines())
-	recommend_label.text = _build_recommendation(elevator)
+	recommend_label.text = "오늘 목표: %s\n%s" % [game_state.current_goal.get("label", "-"), _build_recommendation(elevator)]
 
 func _build_component_summary(elevator: ElevatorData) -> String:
 	var keys := ["door_sensor", "overload_sensor", "emergency_call", "brake_system"]
@@ -148,23 +154,25 @@ func _build_component_summary(elevator: ElevatorData) -> String:
 		if not unlock_manager.unlocked_components.has(cid):
 			continue
 		var name := GameState.COMPONENT_CATALOG[cid][0]
-		lines.append("%s: %s" % [name, elevator.component_state_label(cid)])
-	return "장치 상태\n" + "\n".join(lines)
+		var state := elevator.component_state_label(cid)
+		lines.append("%s: %s" % [name, state])
+	return "핵심 장치\n" + "\n".join(lines)
 
 func _build_recommendation(elevator: ElevatorData) -> String:
 	if elevator.status == "fault":
-		return "권장: 긴급수리 + 비상통화 장치 점검"
+		return "권장: 긴급수리 + 비상통화 점검"
 	if game_state.day - elevator.last_inspection_day > GameState.INSPECTION_INTERVAL_DAYS:
 		return "권장: 정기점검으로 제어/제동계 안정화"
 	if elevator.component_state_label("door_sensor") != "정상":
-		return "권장: 문 센서 관련 정비/캠페인 진행"
-	return "권장: 피크 시간 전 예방정비로 위험 선제 관리"
+		return "권장: 문 센서 정비 + 문 끼임 안내 캠페인"
+	if elevator.wear > 70.0:
+		return "권장: 예방정비로 장기 리스크 절감"
+	return "권장: 피크 시간 대비 과밀 방지 캠페인 병행"
 
 func _open_codex() -> void:
 	codex_popup.show_codex(unlock_manager.unlocked_components, GameState.COMPONENT_CATALOG, unlock_manager.earned_titles)
 
 func _on_codex_unlocked(_component_id: String) -> void:
-	# 새 카드 해금 시 즉시 도감을 띄워 성장감을 제공
 	_open_codex()
 
 func _format_number(value: int) -> String:

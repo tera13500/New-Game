@@ -13,6 +13,10 @@ var age_years: int
 var last_inspection_day: int
 var installed_upgrades: Array[String] = []
 
+# 호기별 특성(전략 차별화)
+var speed_factor: float = 1.0
+var durability_factor: float = 1.0
+
 # 주요 부품 상태(0~100)
 var component_health := {
 	"door_sensor": 78.0,
@@ -27,7 +31,7 @@ var component_health := {
 	"controller": 77.0
 }
 
-func _init(p_id: int, p_name: String, p_floor: int, p_wear: float, p_risk: float, p_age: int, p_last_inspection_day: int) -> void:
+func _init(p_id: int, p_name: String, p_floor: int, p_wear: float, p_risk: float, p_age: int, p_last_inspection_day: int, p_speed_factor: float = 1.0, p_durability_factor: float = 1.0) -> void:
 	id = p_id
 	name = p_name
 	current_floor = p_floor
@@ -37,6 +41,8 @@ func _init(p_id: int, p_name: String, p_floor: int, p_wear: float, p_risk: float
 	load = 0.0
 	age_years = p_age
 	last_inspection_day = p_last_inspection_day
+	speed_factor = p_speed_factor
+	durability_factor = p_durability_factor
 
 func status_label() -> String:
 	match status:
