@@ -19,7 +19,7 @@ content_margin_right = 12
 content_margin_bottom = 12
 
 [node name="ActionPanel" type="PanelContainer"]
-custom_minimum_size = Vector2(0, 110)
+custom_minimum_size = Vector2(0, 130)
 script = ExtResource("1_mq8xq")
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
@@ -60,3 +60,17 @@ text = "업그레이드"
 unique_name_in_owner = true
 layout_mode = 2
 text = "안내강화"
+
+[node name="BottomRow" type="HBoxContainer" parent="VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="CampaignSelector" type="OptionButton" parent="VBox/BottomRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CodexButton" type="Button" parent="VBox/BottomRow"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "부품 도감"

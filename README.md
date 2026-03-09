@@ -1,31 +1,27 @@
-# Elevator Safety Tycoon (Godot 4 MVP)
+# Elevator Safety Tycoon (Godot 4 MVP+)
 
-엘리베이터 2대(5층 건물)를 운영하며 **점검/예방정비/긴급수리/업그레이드**를 선택해
-안전 점수, 만족도, 민원, 예산을 동시에 관리하는 데스크톱용 시뮬레이션 MVP입니다.
+엘리베이터 2대(5층 건물)를 운영하며 **정기점검/예방정비/긴급수리/안전홍보 캠페인/업그레이드**를 선택해
+안전 점수, 만족도, 민원, 예산을 동시에 관리하는 데스크톱 시뮬레이션 게임입니다.
 
-## 현재 MVP 포함 기능
-- 상단 상태바: 예산/안전/만족/점검률/민원/시간
-- 중앙 건물 뷰: 5층 수요, 엘리베이터 A/B 위치 및 상태 애니메이션
-- 우측 상세 패널: 선택 엘리베이터 상태/층/마모/위험/점검/업그레이드
-- 액션 버튼: 정기점검, 예방정비, 긴급수리, 업그레이드, 안내강화
-- Tick 기반 시간 흐름 + Day 라운드 종료
-- 랜덤/조건 이벤트 팝업(선택지 기반 결과 반영)
-- Day 리포트 팝업
+## 핵심 추가 포인트
+- 부품/안전장치가 실제 메커니즘으로 동작
+  - 도어 센서, 인터록, 과부하 감지, 비상통화, 제동장치, 조속기, 권상로프, 가이드레일, 제어반 등
+  - 부품 상태 저하가 위험도 상승으로 직결
+- 안전홍보 캠페인이 텍스트가 아닌 시스템 보너스로 작동
+  - 문 끼임 안내, 과밀 방지, 비상 신고 안내, 배려 안내
+  - 특정 이벤트 확률 및 민원/만족도에 실제 영향
+- 해금형 부품 도감 + 칭호
+  - 이벤트/행동을 통해 부품 카드 해금
+  - 운영 성과에 따라 칭호 획득
+- 리포트 강화
+  - 예방성과, 핵심장치, 놓친 신호, 추천 액션, 안전 인사이트 제공
 
 ## 실행
 1. Godot 4.x로 프로젝트 열기
-2. `scenes/Main.tscn` 실행 (기본 main scene으로 설정됨)
+2. `scenes/Main.tscn` 실행
 
-## 기본 구조
-- `scenes/Main.tscn`
-- `scenes/components/BuildingView.tscn`
-- `scenes/components/ActionPanel.tscn`
-- `scenes/components/EventPopup.tscn`
-- `scenes/components/RoundReportPopup.tscn`
-- `scripts/Main.gd`
-- `scripts/GameState.gd`
-- `scripts/EventManager.gd`
-- `scripts/RoundManager.gd`
-- `scripts/data/ElevatorData.gd`
-- `scripts/data/EventData.gd`
-- `scripts/ui/*.gd`
+## 주요 구조
+- `scripts/GameState.gd`: 운영/부품/캠페인/리포트 요약 로직
+- `scripts/EventManager.gd`: 장치 태그 기반 이벤트
+- `scripts/managers/UnlockManager.gd`: 도감/칭호 해금
+- `scenes/components/ComponentCodexPopup.tscn`: 부품 도감 UI

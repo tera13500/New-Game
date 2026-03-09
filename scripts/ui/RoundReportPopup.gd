@@ -12,13 +12,19 @@ func _ready() -> void:
 
 func show_report(summary: Dictionary, game_state: GameState) -> void:
 	%ReportTitle.text = "Day %d 리포트" % int(summary.get("day", 0))
-	%Metrics.text = "평균 대기: %.1f\n고장 대수: %d\n점검 지연 대수: %d" % [
+	%Metrics.text = "평균 대기: %.1f | 고장: %d | 점검 지연: %d" % [
 		float(summary.get("avg_waiting", 0.0)),
 		int(summary.get("fault_count", 0)),
 		int(summary.get("inspection_overdue", 0))
 	]
-	%Commentary.text = "%s\n\n현재 자산: %s원 | 안전 %.1f | 만족 %.1f | 민원 %d" % [
-		str(summary.get("message", "")),
+	%Commentary.text = "예방성과: %s\n핵심 장치: %s\n놓친 신호: %s\n추천 액션: %s\n안전 인사이트: %s" % [
+		summary.get("best_prevention", "-"),
+		summary.get("critical_component", "-"),
+		summary.get("missed_signal", "-"),
+		summary.get("recommendation", "-"),
+		summary.get("insight", "-")
+	]
+	%Footer.text = "예산 %s원 | 안전 %.1f | 만족 %.1f | 민원 %d" % [
 		_format_number(game_state.money),
 		game_state.safety_score,
 		game_state.satisfaction,

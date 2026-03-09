@@ -3,11 +3,13 @@ extends Control
 @onready var game_state: GameState = $GameState
 @onready var event_manager: EventManager = $EventManager
 @onready var round_manager: RoundManager = $RoundManager
+@onready var unlock_manager: UnlockManager = $UnlockManager
 
 @onready var building_view: BuildingView = %BuildingView
 @onready var action_panel: ActionPanel = %ActionPanel
 @onready var event_popup: EventPopup = %EventPopup
 @onready var report_popup: RoundReportPopup = %RoundReportPopup
+@onready var codex_popup: ComponentCodexPopup = %CodexPopup
 
 @onready var money_value: Label = %MoneyValue
 @onready var safety_value: Label = %SafetyValue
@@ -23,10 +25,13 @@ extends Control
 @onready var wear_value: Label = %WearValue
 @onready var risk_value: Label = %RiskValue
 @onready var inspection_day_value: Label = %InspectionDayValue
+@onready var component_summary: Label = %ComponentSummary
+@onready var campaign_summary: Label = %CampaignSummary
 @onready var upgrades_value: Label = %UpgradesValue
 @onready var recommend_label: Label = %RecommendLabel
 
 var _selected_index: int = 0
+var _selected_campaign_id: String = "door_safety"
 
 func _ready() -> void:
 	randomize()
@@ -39,10 +44,13 @@ func _connect_signals() -> void:
 	round_manager.tick_advanced.connect(_on_tick)
 	round_manager.day_finished.connect(_on_day_finished)
 	action_panel.action_requested.connect(_on_action_requested)
+	action_panel.campaign_changed.connect(func(campaign_id: String) -> void: _selected_campaign_id = campaign_id)
+	action_panel.codex_opened.connect(_open_codex)
 	elevator_selector.item_selected.connect(_on_elevator_selected)
 	event_popup.option_chosen.connect(_on_event_option_chosen)
 	report_popup.continue_pressed.connect(func() -> void: round_manager.start())
 	game_state.state_changed.connect(_refresh_all)
+	unlock_manager.codex_unlocked.connect(_on_codex_unlocked)
 
 func _on_tick() -> void:
 	game_state.advance_tick()
@@ -53,21 +61,19 @@ func _on_tick() -> void:
 
 func _on_day_finished() -> void:
 	round_manager.stop()
+	unlock_manager.evaluate_titles(game_state)
 	var summary := game_state.finish_day()
 	report_popup.show_report(summary, game_state)
 
 func _on_action_requested(action_id: String) -> void:
 	match action_id:
-		"inspection":
-			game_state.perform_regular_inspection(_selected_index)
-		"preventive":
-			game_state.perform_preventive_maintenance(_selected_index)
-		"emergency":
-			game_state.perform_emergency_repair(_selected_index)
+		"inspection": game_state.perform_regular_inspection(_selected_index)
+		"preventive": game_state.perform_preventive_maintenance(_selected_index)
+		"emergency": game_state.perform_emergency_repair(_selected_index)
 		"campaign":
-			game_state.run_safety_campaign()
-		"upgrade":
-			_show_upgrade_choices()
+			if not game_state.run_safety_campaign(_selected_campaign_id):
+				game_state.round_log.append("캠페인 적용 실패: 예산 부족")
+		"upgrade": _show_upgrade_choices()
 
 func _show_upgrade_choices() -> void:
 	var options: Array[Dictionary] = [
@@ -77,31 +83,22 @@ func _show_upgrade_choices() -> void:
 		{"label": "내구성 강화 (-3400)", "upgrade_id": "durability_pack"},
 		{"label": "수용량 개선 (-2800)", "upgrade_id": "capacity_tuning"}
 	]
-	var popup_event := EventData.new(
-		"upgrade_select",
-		"업그레이드 선택",
-		"선택한 엘리베이터에 설치할 업그레이드를 고르세요.",
-		"normal",
-		"action_button",
-		[]
-	)
+	var popup_event := EventData.new("upgrade_select", "업그레이드 선택", "선택한 엘리베이터에 설치할 업그레이드를 고르세요.", "normal", "action_button", [], [], [], "")
 	for option in options:
-		var upgrade_id := str(option["upgrade_id"])
-		popup_event.options.append({
-			"label": str(option["label"]),
-			"effect": {"log": "업그레이드 선택 시도"},
-			"upgrade_id": upgrade_id
-		})
+		popup_event.options.append({"label": str(option["label"]), "effect": {"log": "업그레이드 선택"}, "upgrade_id": str(option["upgrade_id"])})
 	event_popup.show_event(popup_event)
 
-func _on_event_option_chosen(effect: Dictionary) -> void:
+func _on_event_option_chosen(effect: Dictionary, event_data: EventData) -> void:
 	if effect.has("upgrade_id"):
 		var ok := game_state.apply_upgrade(_selected_index, str(effect["upgrade_id"]))
-		if not ok:
-			game_state.round_log.append("업그레이드 실패: 예산 부족 또는 중복")
-			_refresh_all()
+		if ok and str(effect["upgrade_id"]) == "door_sensor":
+			unlock_manager.unlock_component("door_sensor")
+		_refresh_all()
+		round_manager.start()
 		return
 	game_state.apply_effect(effect)
+	for cid in event_data.component_tags:
+		unlock_manager.unlock_component(cid)
 	round_manager.start()
 
 func _populate_selector() -> void:
@@ -118,9 +115,7 @@ func _refresh_all() -> void:
 	_refresh_top_bar()
 	_refresh_right_panel()
 	building_view.update_demands(game_state.floor_demands)
-	building_view.update_elevators(game_state.elevators, func(status: String) -> Color:
-		return game_state.get_status_color(status)
-	)
+	building_view.update_elevators(game_state.elevators, func(status: String) -> Color: return game_state.get_status_color(status))
 
 func _refresh_top_bar() -> void:
 	money_value.text = "%s원" % _format_number(game_state.money)
@@ -141,19 +136,36 @@ func _refresh_right_panel() -> void:
 	risk_value.text = "%.1f%%" % elevator.breakdown_risk
 	inspection_day_value.text = "%d일 전" % (game_state.day - elevator.last_inspection_day)
 	work_summary.text = "목표층 %d층, 현재부하 %.0f%%" % [elevator.target_floor, elevator.load * 100.0]
-	upgrades_value.text = elevator.installed_upgrades_text()
+	upgrades_value.text = "업그레이드: %s" % elevator.installed_upgrades_text()
+	component_summary.text = _build_component_summary(elevator)
+	campaign_summary.text = "활성 캠페인: %s" % " | ".join(game_state.get_campaign_status_lines())
 	recommend_label.text = _build_recommendation(elevator)
+
+func _build_component_summary(elevator: ElevatorData) -> String:
+	var keys := ["door_sensor", "overload_sensor", "emergency_call", "brake_system"]
+	var lines: Array[String] = []
+	for cid in keys:
+		if not unlock_manager.unlocked_components.has(cid):
+			continue
+		var name := GameState.COMPONENT_CATALOG[cid][0]
+		lines.append("%s: %s" % [name, elevator.component_state_label(cid)])
+	return "장치 상태\n" + "\n".join(lines)
 
 func _build_recommendation(elevator: ElevatorData) -> String:
 	if elevator.status == "fault":
-		return "권장: 긴급수리를 우선 실행하세요."
+		return "권장: 긴급수리 + 비상통화 장치 점검"
 	if game_state.day - elevator.last_inspection_day > GameState.INSPECTION_INTERVAL_DAYS:
-		return "권장: 정기점검이 지연되었습니다."
-	if elevator.wear > 70.0 or elevator.breakdown_risk > 65.0:
-		return "권장: 예방정비 또는 내구성 업그레이드가 필요합니다."
-	if game_state.complaints > 8:
-		return "권장: 안내 강화로 민원 상승을 억제하세요."
-	return "권장: 현재 상태 양호. 예산을 아껴 다음 라운드를 준비하세요."
+		return "권장: 정기점검으로 제어/제동계 안정화"
+	if elevator.component_state_label("door_sensor") != "정상":
+		return "권장: 문 센서 관련 정비/캠페인 진행"
+	return "권장: 피크 시간 전 예방정비로 위험 선제 관리"
+
+func _open_codex() -> void:
+	codex_popup.show_codex(unlock_manager.unlocked_components, GameState.COMPONENT_CATALOG, unlock_manager.earned_titles)
+
+func _on_codex_unlocked(_component_id: String) -> void:
+	# 새 카드 해금 시 즉시 도감을 띄워 성장감을 제공
+	_open_codex()
 
 func _format_number(value: int) -> String:
 	var text := str(value)

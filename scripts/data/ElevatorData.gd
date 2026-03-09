@@ -1,7 +1,6 @@
 extends RefCounted
 class_name ElevatorData
 
-# Runtime data for each elevator car.
 var id: int
 var name: String
 var current_floor: int
@@ -14,15 +13,21 @@ var age_years: int
 var last_inspection_day: int
 var installed_upgrades: Array[String] = []
 
-func _init(
-	p_id: int,
-	p_name: String,
-	p_floor: int,
-	p_wear: float,
-	p_risk: float,
-	p_age: int,
-	p_last_inspection_day: int
-) -> void:
+# 주요 부품 상태(0~100)
+var component_health := {
+	"door_sensor": 78.0,
+	"door_interlock": 80.0,
+	"door_operator": 76.0,
+	"overload_sensor": 79.0,
+	"emergency_call": 82.0,
+	"brake_system": 74.0,
+	"governor": 76.0,
+	"hoist_rope": 73.0,
+	"guide_rail": 75.0,
+	"controller": 77.0
+}
+
+func _init(p_id: int, p_name: String, p_floor: int, p_wear: float, p_risk: float, p_age: int, p_last_inspection_day: int) -> void:
 	id = p_id
 	name = p_name
 	current_floor = p_floor
@@ -35,20 +40,13 @@ func _init(
 
 func status_label() -> String:
 	match status:
-		"normal":
-			return "정상"
-		"busy":
-			return "운행중"
-		"warning":
-			return "주의"
-		"risk":
-			return "위험"
-		"fault":
-			return "고장"
-		"inspection_due":
-			return "점검필요"
-		_:
-			return "알 수 없음"
+		"normal": return "정상"
+		"busy": return "운행중"
+		"warning": return "주의"
+		"risk": return "위험"
+		"fault": return "고장"
+		"inspection_due": return "점검필요"
+		_: return "알 수 없음"
 
 func installed_upgrades_text() -> String:
 	if installed_upgrades.is_empty():
@@ -57,3 +55,21 @@ func installed_upgrades_text() -> String:
 
 func has_upgrade(upgrade_id: String) -> bool:
 	return installed_upgrades.has(upgrade_id)
+
+func degrade_component(component_id: String, amount: float) -> void:
+	if not component_health.has(component_id):
+		return
+	component_health[component_id] = clampf(float(component_health[component_id]) - amount, 0.0, 100.0)
+
+func recover_component(component_id: String, amount: float) -> void:
+	if not component_health.has(component_id):
+		return
+	component_health[component_id] = clampf(float(component_health[component_id]) + amount, 0.0, 100.0)
+
+func component_state_label(component_id: String) -> String:
+	var v := float(component_health.get(component_id, 0.0))
+	if v >= 70.0:
+		return "정상"
+	if v >= 45.0:
+		return "주의"
+	return "점검필요"

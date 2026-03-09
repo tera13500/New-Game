@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://c7pfqyb8e1quv"]
+[gd_scene load_steps=11 format=3 uid="uid://c7pfqyb8e1quv"]
 
 [ext_resource type="Script" path="res://scripts/Main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/GameState.gd" id="2_state"]
@@ -8,6 +8,8 @@
 [ext_resource type="PackedScene" path="res://scenes/components/ActionPanel.tscn" id="6_actions"]
 [ext_resource type="PackedScene" path="res://scenes/components/EventPopup.tscn" id="7_popup"]
 [ext_resource type="PackedScene" path="res://scenes/components/RoundReportPopup.tscn" id="8_report"]
+[ext_resource type="Script" path="res://scripts/managers/UnlockManager.gd" id="9_unlock"]
+[ext_resource type="PackedScene" path="res://scenes/components/ComponentCodexPopup.tscn" id="10_codex"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
 bg_color = Color(0.10, 0.13, 0.20, 0.96)
@@ -59,6 +61,9 @@ script = ExtResource("3_event")
 [node name="RoundManager" type="Node" parent="."]
 script = ExtResource("4_round")
 
+[node name="UnlockManager" type="Node" parent="."]
+script = ExtResource("9_unlock")
+
 [node name="Background" type="ColorRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
@@ -92,15 +97,11 @@ theme_override_constants/separation = 10
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_card")
-
 [node name="MoneyVBox" type="VBoxContainer" parent="Root/Layout/TopBar/TopRow/MoneyCard"]
 layout_mode = 2
-
 [node name="MoneyLabel" type="Label" parent="Root/Layout/TopBar/TopRow/MoneyCard/MoneyVBox"]
 layout_mode = 2
 text = "예산"
-modulate = Color(0.76, 0.82, 0.93, 1)
-
 [node name="MoneyValue" type="Label" parent="Root/Layout/TopBar/TopRow/MoneyCard/MoneyVBox"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -110,15 +111,11 @@ text = "0"
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_card")
-
 [node name="SafetyVBox" type="VBoxContainer" parent="Root/Layout/TopBar/TopRow/SafetyCard"]
 layout_mode = 2
-
 [node name="SafetyLabel" type="Label" parent="Root/Layout/TopBar/TopRow/SafetyCard/SafetyVBox"]
 layout_mode = 2
 text = "안전점수"
-modulate = Color(0.76, 0.82, 0.93, 1)
-
 [node name="SafetyValue" type="Label" parent="Root/Layout/TopBar/TopRow/SafetyCard/SafetyVBox"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -128,15 +125,11 @@ text = "0"
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_card")
-
 [node name="SatisfactionVBox" type="VBoxContainer" parent="Root/Layout/TopBar/TopRow/SatisfactionCard"]
 layout_mode = 2
-
 [node name="SatisfactionLabel" type="Label" parent="Root/Layout/TopBar/TopRow/SatisfactionCard/SatisfactionVBox"]
 layout_mode = 2
 text = "만족도"
-modulate = Color(0.76, 0.82, 0.93, 1)
-
 [node name="SatisfactionValue" type="Label" parent="Root/Layout/TopBar/TopRow/SatisfactionCard/SatisfactionVBox"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -146,15 +139,11 @@ text = "0"
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_card")
-
 [node name="InspectionVBox" type="VBoxContainer" parent="Root/Layout/TopBar/TopRow/InspectionCard"]
 layout_mode = 2
-
 [node name="InspectionLabel" type="Label" parent="Root/Layout/TopBar/TopRow/InspectionCard/InspectionVBox"]
 layout_mode = 2
 text = "점검률"
-modulate = Color(0.76, 0.82, 0.93, 1)
-
 [node name="InspectionValue" type="Label" parent="Root/Layout/TopBar/TopRow/InspectionCard/InspectionVBox"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -164,15 +153,11 @@ text = "0"
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_card")
-
 [node name="ComplaintVBox" type="VBoxContainer" parent="Root/Layout/TopBar/TopRow/ComplaintCard"]
 layout_mode = 2
-
 [node name="ComplaintLabel" type="Label" parent="Root/Layout/TopBar/TopRow/ComplaintCard/ComplaintVBox"]
 layout_mode = 2
 text = "민원"
-modulate = Color(0.76, 0.82, 0.93, 1)
-
 [node name="ComplaintValue" type="Label" parent="Root/Layout/TopBar/TopRow/ComplaintCard/ComplaintVBox"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -182,15 +167,11 @@ text = "0"
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_card")
-
 [node name="TimeVBox" type="VBoxContainer" parent="Root/Layout/TopBar/TopRow/TimeCard"]
 layout_mode = 2
-
 [node name="TimeLabel" type="Label" parent="Root/Layout/TopBar/TopRow/TimeCard/TimeVBox"]
 layout_mode = 2
 text = "진행"
-modulate = Color(0.76, 0.82, 0.93, 1)
-
 [node name="TimeValue" type="Label" parent="Root/Layout/TopBar/TopRow/TimeCard/TimeVBox"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -208,86 +189,78 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="RightPanel" type="PanelContainer" parent="Root/Layout/MainRow"]
-custom_minimum_size = Vector2(360, 0)
+custom_minimum_size = Vector2(390, 0)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
 [node name="RightVBox" type="VBoxContainer" parent="Root/Layout/MainRow/RightPanel"]
 layout_mode = 2
-theme_override_constants/separation = 9
+theme_override_constants/separation = 8
 
 [node name="PanelTitle" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox"]
 layout_mode = 2
 text = "엘리베이터 상세"
-
 [node name="ElevatorSelector" type="OptionButton" parent="Root/Layout/MainRow/RightPanel/RightVBox"]
 unique_name_in_owner = true
 layout_mode = 2
-
 [node name="StatusBadge" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "정상"
-
 [node name="WorkSummary" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox"]
 unique_name_in_owner = true
 layout_mode = 2
 autowrap_mode = 2
-text = "현재 운행 상태 요약"
+text = "현재 운행 상태"
 
 [node name="Grid" type="GridContainer" parent="Root/Layout/MainRow/RightPanel/RightVBox"]
 layout_mode = 2
 columns = 2
-theme_override_constants/h_separation = 8
-theme_override_constants/v_separation = 6
-
 [node name="CurrentFloorLabel" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox/Grid"]
 layout_mode = 2
 text = "현재 층"
-
 [node name="CurrentFloorValue" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox/Grid"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "1층"
-
 [node name="WearLabel" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox/Grid"]
 layout_mode = 2
 text = "마모도"
-
 [node name="WearValue" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox/Grid"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "0%"
-
 [node name="RiskLabel" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox/Grid"]
 layout_mode = 2
 text = "고장 위험"
-
 [node name="RiskValue" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox/Grid"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "0%"
-
 [node name="InspectionDayLabel" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox/Grid"]
 layout_mode = 2
 text = "최근 점검"
-
 [node name="InspectionDayValue" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox/Grid"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "0일"
 
-[node name="UpgradesLabel" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox"]
+[node name="ComponentSummary" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox"]
+unique_name_in_owner = true
 layout_mode = 2
-text = "설치 업그레이드"
-
+autowrap_mode = 2
+text = "핵심 장치 상태"
+[node name="CampaignSummary" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 2
+text = "활성 캠페인"
 [node name="UpgradesValue" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox"]
 unique_name_in_owner = true
 layout_mode = 2
 autowrap_mode = 2
-text = "없음"
-
+text = "업그레이드 없음"
 [node name="RecommendLabel" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -300,6 +273,7 @@ layout_mode = 2
 
 [node name="EventPopup" parent="." instance=ExtResource("7_popup")]
 unique_name_in_owner = true
-
 [node name="RoundReportPopup" parent="." instance=ExtResource("8_report")]
+unique_name_in_owner = true
+[node name="CodexPopup" parent="." instance=ExtResource("10_codex")]
 unique_name_in_owner = true

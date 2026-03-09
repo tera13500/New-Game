@@ -7,6 +7,10 @@ var description: String
 var severity: String
 var trigger_condition: String
 var options: Array[Dictionary]
+var component_tags: Array[String]
+var campaign_tags: Array[String]
+var recommended_action: String
+var unlock_component_id: String
 
 func _init(
 	p_event_id: String,
@@ -14,7 +18,11 @@ func _init(
 	p_description: String,
 	p_severity: String,
 	p_trigger_condition: String,
-	p_options: Array[Dictionary]
+	p_options: Array[Dictionary],
+	p_component_tags: Array[String] = [],
+	p_campaign_tags: Array[String] = [],
+	p_recommended_action: String = "",
+	p_unlock_component_id: String = ""
 ) -> void:
 	event_id = p_event_id
 	title = p_title
@@ -22,3 +30,7 @@ func _init(
 	severity = p_severity
 	trigger_condition = p_trigger_condition
 	options = p_options
+	component_tags = p_component_tags
+	campaign_tags = p_campaign_tags
+	recommended_action = p_recommended_action
+	unlock_component_id = p_unlock_component_id
