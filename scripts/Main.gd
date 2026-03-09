@@ -17,6 +17,7 @@ extends Control
 @onready var inspection_value: Label = %InspectionValue
 @onready var complaint_value: Label = %ComplaintValue
 @onready var time_value: Label = %TimeValue
+@onready var version_label: Label = %VersionLabel
 
 @onready var elevator_selector: OptionButton = %ElevatorSelector
 @onready var status_badge: Label = %StatusBadge
@@ -35,6 +36,7 @@ var _selected_campaign_id: String = "door_safety"
 
 func _ready() -> void:
 	randomize()
+	version_label.text = "v%s" % GameState.GAME_VERSION
 	_connect_signals()
 	_populate_selector()
 	_refresh_all()
@@ -51,10 +53,11 @@ func _connect_signals() -> void:
 	report_popup.continue_pressed.connect(func() -> void: round_manager.start())
 	game_state.state_changed.connect(_refresh_all)
 	unlock_manager.codex_unlocked.connect(_on_codex_unlocked)
+	codex_popup.popup_closed.connect(func() -> void: round_manager.start())
 
 func _on_tick() -> void:
 	game_state.advance_tick()
-	var event_data := event_manager.get_event_for_state(game_state)
+	var event_data: EventData = event_manager.get_event_for_state(game_state)
 	if event_data != null:
 		round_manager.stop()
 		event_popup.show_event(event_data)
@@ -62,20 +65,25 @@ func _on_tick() -> void:
 func _on_day_finished() -> void:
 	round_manager.stop()
 	unlock_manager.evaluate_titles(game_state)
-	var summary := game_state.finish_day()
+	var summary: Dictionary = game_state.finish_day()
 	report_popup.show_report(summary, game_state)
 
 func _on_action_requested(action_id: String) -> void:
 	match action_id:
-		"inspection": game_state.perform_regular_inspection(_selected_index)
-		"preventive": game_state.perform_preventive_maintenance(_selected_index)
-		"emergency": game_state.perform_emergency_repair(_selected_index)
+		"inspection":
+			game_state.perform_regular_inspection(_selected_index)
+		"preventive":
+			game_state.perform_preventive_maintenance(_selected_index)
+		"emergency":
+			game_state.perform_emergency_repair(_selected_index)
 		"campaign":
 			if not game_state.run_safety_campaign(_selected_campaign_id):
 				game_state.round_log.append("캠페인 적용 실패: 예산 부족")
-		"upgrade": _show_upgrade_choices()
+		"upgrade":
+			_show_upgrade_choices()
 
 func _show_upgrade_choices() -> void:
+	round_manager.stop()
 	var options: Array[Dictionary] = [
 		{"label": "문 센서 개선 (-2600)", "upgrade_id": "door_sensor"},
 		{"label": "속도 드라이브 개선 (-2800)", "upgrade_id": "speed_drive"},
@@ -83,45 +91,58 @@ func _show_upgrade_choices() -> void:
 		{"label": "내구성 강화 (-3400)", "upgrade_id": "durability_pack"},
 		{"label": "수용량 개선 (-2800)", "upgrade_id": "capacity_tuning"}
 	]
-	var popup_event := EventData.new("upgrade_select", "업그레이드 선택", "선택한 엘리베이터에 설치할 업그레이드를 고르세요.", "normal", "action_button", [], [], [], "")
-	for option in options:
-		popup_event.options.append({"label": str(option["label"]), "effect": {"log": "업그레이드 선택"}, "upgrade_id": str(option["upgrade_id"])})
+	var popup_event: EventData = EventData.new("upgrade_select", "업그레이드 선택", "선택한 엘리베이터에 설치할 업그레이드를 고르세요.", "normal", "action_button", [], [], "")
+	for option: Dictionary in options:
+		popup_event.options.append({
+			"label": str(option["label"]),
+			"effect": {"log": "업그레이드 선택"},
+			"upgrade_id": str(option["upgrade_id"])
+		})
 	event_popup.show_event(popup_event)
 
 func _on_event_option_chosen(effect: Dictionary, event_data: EventData) -> void:
 	if effect.has("upgrade_id"):
-		var ok := game_state.apply_upgrade(_selected_index, str(effect["upgrade_id"]))
+		var ok: bool = game_state.apply_upgrade(_selected_index, str(effect["upgrade_id"]))
 		if ok and str(effect["upgrade_id"]) == "door_sensor":
 			unlock_manager.unlock_component("door_sensor")
 		_refresh_all()
 		round_manager.start()
 		return
-	game_state.apply_effect(effect, event_data.target_elevator_id)
-	for cid in event_data.component_tags:
+
+	if effect.has("fault_action") and event_data.target_elevator_id >= 0:
+		game_state.resolve_fault_for_elevator_id(event_data.target_elevator_id, str(effect["fault_action"]))
+		game_state.apply_effect(effect, event_data.target_elevator_id)
+	else:
+		game_state.apply_effect(effect, event_data.target_elevator_id)
+
+	for cid: String in event_data.component_tags:
 		unlock_manager.unlock_component(cid)
 	round_manager.start()
 
 func _populate_selector() -> void:
 	elevator_selector.clear()
-	for i in game_state.elevators.size():
-		elevator_selector.add_item(game_state.elevators[i].name, i)
+	for i: int in game_state.elevators.size():
+		var elevator: ElevatorData = game_state.elevators[i]
+		elevator_selector.add_item(elevator.name, i)
 	elevator_selector.select(0)
 
 func _on_elevator_selected(index: int) -> void:
 	_selected_index = index
 	_refresh_right_panel()
-	var e := game_state.get_elevator(_selected_index)
-	if e != null:
-		building_view.set_selected_elevator(e.id)
+	var elevator: ElevatorData = game_state.get_elevator(_selected_index)
+	if elevator != null:
+		building_view.set_selected_elevator(elevator.id)
 
 func _refresh_all() -> void:
 	_refresh_top_bar()
 	_refresh_right_panel()
 	building_view.update_demands(game_state.floor_demands)
-	building_view.update_elevators(game_state.elevators, func(status: String) -> Color: return game_state.get_status_color(status))
-	var e := game_state.get_elevator(_selected_index)
-	if e != null:
-		building_view.set_selected_elevator(e.id)
+	building_view.update_elevators(game_state.elevators, func(status: String) -> Color:
+		return game_state.get_status_color(status)
+	)
+	var elevator: ElevatorData = game_state.get_elevator(_selected_index)
+	if elevator != null:
+		building_view.set_selected_elevator(elevator.id)
 
 func _refresh_top_bar() -> void:
 	money_value.text = "%s원" % _format_number(game_state.money)
@@ -132,7 +153,7 @@ func _refresh_top_bar() -> void:
 	time_value.text = "Day %d / Tick %d" % [game_state.day, game_state.tick_in_day]
 
 func _refresh_right_panel() -> void:
-	var elevator := game_state.get_elevator(_selected_index)
+	var elevator: ElevatorData = game_state.get_elevator(_selected_index)
 	if elevator == null:
 		return
 	status_badge.text = "%s | %s" % [elevator.name, elevator.status_label()]
@@ -141,45 +162,49 @@ func _refresh_right_panel() -> void:
 	wear_value.text = "%.1f%%" % elevator.wear
 	risk_value.text = "%.1f%%" % elevator.breakdown_risk
 	inspection_day_value.text = "%d일 전" % (game_state.day - elevator.last_inspection_day)
-	work_summary.text = "목표층 %d층 / 부하 %.0f%% / 속도계수 %.2f / 내구계수 %.2f" % [elevator.target_floor, elevator.load * 100.0, elevator.speed_factor, elevator.durability_factor]
+	work_summary.text = "목표층 %d층 / 부하 %.0f%% / 속도 %.2f / 내구 %.2f" % [elevator.target_floor, elevator.load * 100.0, elevator.speed_factor, elevator.durability_factor]
 	upgrades_value.text = "업그레이드: %s" % elevator.installed_upgrades_text()
 	component_summary.text = _build_component_summary(elevator)
 	campaign_summary.text = "활성 캠페인: %s" % " | ".join(game_state.get_campaign_status_lines())
-	recommend_label.text = "오늘 목표: %s\n%s" % [game_state.current_goal.get("label", "-"), _build_recommendation(elevator)]
+	var goal_label: String = str(game_state.current_goal.get("label", "-"))
+	recommend_label.text = "오늘 목표: %s\n%s" % [goal_label, _build_recommendation(elevator)]
 
 func _build_component_summary(elevator: ElevatorData) -> String:
-	var keys := ["door_sensor", "overload_sensor", "emergency_call", "brake_system"]
+	var keys: Array[String] = ["door_sensor", "overload_sensor", "emergency_call", "brake_system"]
 	var lines: Array[String] = []
-	for cid in keys:
+	for cid: String in keys:
 		if not unlock_manager.unlocked_components.has(cid):
 			continue
-		var name := GameState.COMPONENT_CATALOG[cid][0]
-		var state := elevator.component_state_label(cid)
-		lines.append("%s: %s" % [name, state])
+		var component_name: String = game_state.component_display_name(cid)
+		var state: String = elevator.component_state_label(cid)
+		lines.append("%s: %s" % [component_name, state])
 	return "핵심 장치\n" + "\n".join(lines)
 
 func _build_recommendation(elevator: ElevatorData) -> String:
 	if elevator.status == "fault":
-		return "권장: 긴급수리 + 비상통화 점검"
+		return "권장: 긴급수리 + 비상통화 장치 점검"
 	if game_state.day - elevator.last_inspection_day > GameState.INSPECTION_INTERVAL_DAYS:
 		return "권장: 정기점검으로 제어/제동계 안정화"
 	if elevator.component_state_label("door_sensor") != "정상":
-		return "권장: 문 센서 정비 + 문 끼임 안내 캠페인"
+		return "권장: 도어 센서 정비 + 문 끼임 주의 캠페인"
 	if elevator.wear > 70.0:
 		return "권장: 예방정비로 장기 리스크 절감"
-	return "권장: 피크 시간 대비 과밀 방지 캠페인 병행"
+	if game_state.complaints > 6:
+		return "권장: 과밀 탑승 방지 캠페인과 속도 개선 병행"
+	return "권장: 피크 시간 대비 균형 운영 유지"
 
 func _open_codex() -> void:
+	round_manager.stop()
 	codex_popup.show_codex(unlock_manager.unlocked_components, GameState.COMPONENT_CATALOG, unlock_manager.earned_titles)
 
 func _on_codex_unlocked(_component_id: String) -> void:
 	_open_codex()
 
 func _format_number(value: int) -> String:
-	var text := str(value)
-	var out := ""
-	var count := 0
-	for i in range(text.length() - 1, -1, -1):
+	var text: String = str(value)
+	var out: String = ""
+	var count: int = 0
+	for i: int in range(text.length() - 1, -1, -1):
 		out = text[i] + out
 		count += 1
 		if count % 3 == 0 and i > 0:

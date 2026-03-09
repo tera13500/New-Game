@@ -18,7 +18,7 @@ func show_report(summary: Dictionary, game_state: GameState) -> void:
 		int(summary.get("inspection_overdue", 0))
 	]
 	var goal_result: Dictionary = summary.get("goal_result", {"success": false, "reward": 0})
-	var goal_line := "라운드 목표: %s (%s)" % [
+	var goal_line: String = "라운드 목표: %s (%s)" % [
 		summary.get("goal_text", "-"),
 		"성공 +%d원" % int(goal_result.get("reward", 0)) if bool(goal_result.get("success", false)) else "실패"
 	]
@@ -34,9 +34,9 @@ func show_report(summary: Dictionary, game_state: GameState) -> void:
 	visible = true
 
 func _format_number(value: int) -> String:
-	var text := str(value)
-	var out := ""
-	var count := 0
+	var text: String = str(value)
+	var out: String = ""
+	var count: int = 0
 	for i in range(text.length() - 1, -1, -1):
 		out = text[i] + out
 		count += 1

@@ -2,7 +2,7 @@ extends Node
 class_name EventManager
 
 func get_event_for_state(game_state: GameState) -> EventData:
-	var forced := _pick_condition_event(game_state)
+	var forced: EventData = _pick_condition_event(game_state)
 	if forced != null:
 		return forced
 	if randf() < 0.44:
@@ -10,15 +10,15 @@ func get_event_for_state(game_state: GameState) -> EventData:
 	return null
 
 func _pick_condition_event(game_state: GameState) -> EventData:
-	for elevator in game_state.elevators:
+	for elevator: ElevatorData in game_state.elevators:
 		if elevator.status == "fault":
 			return EventData.new(
 				"fault_real", "실제 고장 발생", "%s가 정지했습니다. 즉시 대응이 필요합니다." % elevator.name,
 				"fault", "elevator_fault",
 				[
-					{"label":"긴급수리 즉시 진행 (-5200)", "effect":{"money":-5200, "safety":2.5, "satisfaction":2.5, "complaints":-2, "risk":-16.0, "log":"고장 즉시 대응"}},
-					{"label":"임시 격리 후 반나절 지연", "effect":{"money":-2600, "safety":-3.0, "satisfaction":-5.0, "complaints":2, "risk":8.0, "log":"고장 대응 지연"}},
-					{"label":"안내 강화 후 외주 수리", "effect":{"money":-3800, "safety":0.5, "satisfaction":-1.0, "complaints":0, "risk":2.0, "log":"외주 수리 선택"}}
+					{"label":"긴급수리 즉시 진행 (-5200)", "effect":{"money":0, "log":"고장 즉시 대응"}, "fault_action":"immediate"},
+					{"label":"임시 격리 후 반나절 지연", "effect":{"money":-2600, "safety":-3.0, "satisfaction":-5.0, "complaints":2, "risk":8.0, "log":"고장 대응 지연"}, "fault_action":"delay"},
+					{"label":"안내 강화 후 외주 수리", "effect":{"money":-3800, "safety":0.5, "satisfaction":-1.0, "complaints":0, "risk":2.0, "log":"외주 수리 선택"}, "fault_action":"outsource"}
 				],
 				["emergency_call", "brake_system", "governor"], ["emergency_guide"], "긴급수리", "governor", elevator.id
 			)
@@ -35,16 +35,16 @@ func _pick_condition_event(game_state: GameState) -> EventData:
 	return null
 
 func _pick_weighted_random_event(game_state: GameState) -> EventData:
-	var pool := _random_pool(game_state)
+	var pool: Array[EventData] = _random_pool(game_state)
 	var weighted: Array[EventData] = []
-	for ev in pool:
-		var copies := max(1, int(round(3.0 * game_state.get_event_weight(ev.event_id))))
-		for _i in copies:
+	for ev: EventData in pool:
+		var copies: int = max(1, int(round(3.0 * game_state.get_event_weight(ev.event_id))))
+		for _i: int in copies:
 			weighted.append(ev)
 	return weighted[randi_range(0, weighted.size() - 1)]
 
 func _random_pool(game_state: GameState) -> Array[EventData]:
-	var target := game_state.elevators[randi_range(0, game_state.elevators.size() - 1)]
+	var target: ElevatorData = game_state.elevators[randi_range(0, game_state.elevators.size() - 1)]
 	return [
 		EventData.new("door_delay", "문 닫힘 지연", "%s 문이 닫히기 전에 재개방되는 빈도가 늘었습니다." % target.name, "warning", "random",
 			[{"label":"도어 오퍼레이터 조정 (-900)", "effect":{"money":-900, "risk":-2.0, "satisfaction":1.0, "log":"문 구동 조정"}}, {"label":"관찰", "effect":{"satisfaction":-1.0, "complaints":1, "risk":1.0, "log":"문 지연 관찰"}}],

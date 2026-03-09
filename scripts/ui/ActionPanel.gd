@@ -20,5 +20,5 @@ func _ready() -> void:
 	%CampaignSelector.item_selected.connect(_on_campaign_selected)
 
 func _on_campaign_selected(index: int) -> void:
-	var ids := ["door_safety", "overload_notice", "emergency_guide", "senior_care"]
+	var ids: Array[String] = ["door_safety", "overload_notice", "emergency_guide", "senior_care"]
 	emit_signal("campaign_changed", ids[index])

@@ -1,6 +1,14 @@
 extends RefCounted
 class_name ElevatorData
 
+const UPGRADE_DISPLAY: Dictionary = {
+	"door_sensor": "도어 센서 개선",
+	"speed_drive": "속도 드라이브 개선",
+	"maintenance_suite": "유지관리 효율 팩",
+	"durability_pack": "내구성 강화",
+	"capacity_tuning": "수용량 개선"
+}
+
 var id: int
 var name: String
 var current_floor: int
@@ -13,12 +21,10 @@ var age_years: int
 var last_inspection_day: int
 var installed_upgrades: Array[String] = []
 
-# 호기별 특성(전략 차별화)
 var speed_factor: float = 1.0
 var durability_factor: float = 1.0
 
-# 주요 부품 상태(0~100)
-var component_health := {
+var component_health: Dictionary = {
 	"door_sensor": 78.0,
 	"door_interlock": 80.0,
 	"door_operator": 76.0,
@@ -57,7 +63,10 @@ func status_label() -> String:
 func installed_upgrades_text() -> String:
 	if installed_upgrades.is_empty():
 		return "없음"
-	return ", ".join(installed_upgrades)
+	var labels: Array[String] = []
+	for upgrade_id: String in installed_upgrades:
+		labels.append(str(UPGRADE_DISPLAY.get(upgrade_id, "알 수 없는 업그레이드")))
+	return ", ".join(labels)
 
 func has_upgrade(upgrade_id: String) -> bool:
 	return installed_upgrades.has(upgrade_id)
@@ -65,15 +74,17 @@ func has_upgrade(upgrade_id: String) -> bool:
 func degrade_component(component_id: String, amount: float) -> void:
 	if not component_health.has(component_id):
 		return
-	component_health[component_id] = clampf(float(component_health[component_id]) - amount, 0.0, 100.0)
+	var old_value: float = float(component_health[component_id])
+	component_health[component_id] = clampf(old_value - amount, 0.0, 100.0)
 
 func recover_component(component_id: String, amount: float) -> void:
 	if not component_health.has(component_id):
 		return
-	component_health[component_id] = clampf(float(component_health[component_id]) + amount, 0.0, 100.0)
+	var old_value: float = float(component_health[component_id])
+	component_health[component_id] = clampf(old_value + amount, 0.0, 100.0)
 
 func component_state_label(component_id: String) -> String:
-	var v := float(component_health.get(component_id, 0.0))
+	var v: float = float(component_health.get(component_id, 0.0))
 	if v >= 70.0:
 		return "정상"
 	if v >= 45.0:

@@ -17,7 +17,7 @@ func _ready() -> void:
 
 func update_demands(demands: Array[int]) -> void:
 	for i in min(demands.size(), floor_demand_labels.size()):
-		var value := demands[demands.size() - 1 - i]
+		var value: int = demands[demands.size() - 1 - i]
 		floor_demand_labels[i].text = "%d명 대기" % value
 		floor_demand_labels[i].modulate = Color("#FFB24D") if value >= 8 else Color("#C9D5EC")
 		floor_bars[i].size.x = clampf(20 + value * 6.0, 20, 160)
@@ -42,8 +42,8 @@ func set_selected_elevator(elevator_id: int) -> void:
 		marker_b.add_theme_color_override("font_color", Color("#FFFFFF"))
 
 func _update_single(car: PanelContainer, label: Label, marker: Label, elevator: ElevatorData, color_resolver: Callable) -> void:
-	var floor_index := clampi(5 - elevator.current_floor, 0, 4)
-	var target_y := _floor_y[floor_index]
+	var floor_index: int = clampi(5 - elevator.current_floor, 0, 4)
+	var target_y: float = _floor_y[floor_index]
 	create_tween().tween_property(car, "position:y", target_y, 0.35).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	label.text = "%s  %.0f%%" % [elevator.name, elevator.load * 100.0]
 	label.modulate = color_resolver.call(elevator.status)
@@ -51,9 +51,13 @@ func _update_single(car: PanelContainer, label: Label, marker: Label, elevator: 
 	marker.text = _marker_text(elevator.status)
 	marker.modulate = color_resolver.call(elevator.status)
 	if elevator.status == "fault":
-		var flash := create_tween()
+		var flash: Tween = create_tween()
 		flash.tween_property(car, "modulate:a", 0.35, 0.1)
 		flash.tween_property(car, "modulate:a", 1.0, 0.1)
+	elif elevator.status in ["warning", "risk", "inspection_due"]:
+		var pulse: Tween = create_tween()
+		pulse.tween_property(car, "scale", Vector2(1.05, 1.05), 0.12)
+		pulse.tween_property(car, "scale", Vector2.ONE, 0.12)
 
 func _marker_text(status: String) -> String:
 	match status:

@@ -1,15 +1,16 @@
 extends Node
 class_name GameState
 
-const FLOOR_COUNT := 5
-const ELEVATOR_COUNT := 2
-const INSPECTION_INTERVAL_DAYS := 4
+const GAME_VERSION: String = "1.1.6"
+const FLOOR_COUNT: int = 5
+const ELEVATOR_COUNT: int = 2
+const INSPECTION_INTERVAL_DAYS: int = 4
 
-const COMPONENT_CATALOG := {
+const COMPONENT_CATALOG: Dictionary = {
 	"door_sensor": ["도어 센서", "문 끼임을 감지해 재개방", "문사고 예방 핵심"],
 	"door_interlock": ["도어 인터록", "문이 닫혀야 출발 허용", "출입부 안전 보장"],
 	"door_operator": ["도어 오퍼레이터", "문 개폐 구동 장치", "문 지연/충돌 완화"],
-	"overload_sensor": ["과부하 감지", "과밀 탑승 감지", "과부하 운행 방지"],
+	"overload_sensor": ["과부하 감지 장치", "과밀 탑승 감지", "과부하 운행 방지"],
 	"emergency_call": ["비상통화 장치", "비상 시 구조 요청", "고장 시 피해 완화"],
 	"brake_system": ["제동장치", "정지 제어", "급정지 위험 완화"],
 	"governor": ["조속기", "과속 감지", "고위험 사고 예방"],
@@ -18,7 +19,7 @@ const COMPONENT_CATALOG := {
 	"controller": ["제어반", "운행 로직 제어", "정지 오차/버튼 반응 개선"]
 }
 
-const CAMPAIGN_CATALOG := {
+const CAMPAIGN_CATALOG: Dictionary = {
 	"door_safety": ["문 끼임 주의 안내", 3],
 	"overload_notice": ["과밀 탑승 방지 안내", 3],
 	"emergency_guide": ["비상 시 신고/통화 안내", 4],
@@ -38,7 +39,7 @@ var complaints: int = 4
 var floor_demands: Array[int] = [0, 0, 0, 0, 0]
 var elevators: Array[ElevatorData] = []
 var round_log: Array[String] = []
-var active_campaign_ticks := {"door_safety": 0, "overload_notice": 0, "emergency_guide": 0, "senior_care": 0}
+var active_campaign_ticks: Dictionary = {"door_safety": 0, "overload_notice": 0, "emergency_guide": 0, "senior_care": 0}
 var current_goal: Dictionary = {}
 
 func _ready() -> void:
@@ -47,7 +48,6 @@ func _ready() -> void:
 
 func seed_dummy_data() -> void:
 	elevators.clear()
-	# A: 빠르지만 내구 낮음 / B: 느리지만 안정적
 	elevators.append(ElevatorData.new(1, "A호기", 1, 30.0, 22.0, 8, 1, 1.15, 0.9))
 	elevators.append(ElevatorData.new(2, "B호기", 4, 42.0, 28.0, 10, 3, 0.92, 1.12))
 	floor_demands = [2, 3, 1, 4, 2]
@@ -62,13 +62,17 @@ func get_status_color(status: String) -> Color:
 		"fault": return Color("#D7263D")
 		_: return Color("#7A8499")
 
+func component_display_name(component_id: String) -> String:
+	var info: Array = COMPONENT_CATALOG.get(component_id, ["알 수 없는 장치", "", ""])
+	return str(info[0])
+
 func get_elevator(index: int) -> ElevatorData:
 	if index < 0 or index >= elevators.size():
 		return null
 	return elevators[index]
 
 func get_elevator_by_id(elevator_id: int) -> ElevatorData:
-	for e in elevators:
+	for e: ElevatorData in elevators:
 		if e.id == elevator_id:
 			return e
 	return null
@@ -85,8 +89,8 @@ func advance_tick() -> void:
 
 func finish_day() -> Dictionary:
 	var avg_waiting: float = _total_demand() / float(FLOOR_COUNT)
-	var goal_result := _evaluate_goal()
-	var summary := {
+	var goal_result: Dictionary = _evaluate_goal()
+	var summary: Dictionary = {
 		"day": day,
 		"avg_waiting": avg_waiting,
 		"fault_count": _count_faults(),
@@ -96,12 +100,24 @@ func finish_day() -> Dictionary:
 		"missed_signal": _missed_signal_text(),
 		"recommendation": _next_recommendation_text(),
 		"insight": _daily_insight_text(),
-		"goal_text": current_goal.get("label", "-"),
+		"goal_text": str(current_goal.get("label", "-")),
 		"goal_result": goal_result
 	}
+
 	if bool(goal_result.get("success", false)):
 		money += int(goal_result.get("reward", 0))
-		safety_score = clampf(safety_score + 1.5, 0.0, 100.0)
+		safety_score = clampf(safety_score + 1.2, 0.0, 100.0)
+
+	# 운영 성과 보상 루프(과하지 않게)
+	if _count_faults() == 0:
+		money += 450
+	if complaints <= 3:
+		money += 350
+	if inspection_rate >= 78.0:
+		money += 300
+	if satisfaction >= 80.0:
+		money += 250
+
 	day += 1
 	tick_in_day = 0
 	_roll_daily_goal()
@@ -109,7 +125,7 @@ func finish_day() -> Dictionary:
 	return summary
 
 func perform_regular_inspection(elevator_index: int) -> void:
-	var elevator := get_elevator(elevator_index)
+	var elevator: ElevatorData = get_elevator(elevator_index)
 	if elevator == null or money < 1200:
 		return
 	money -= 1200
@@ -119,11 +135,11 @@ func perform_regular_inspection(elevator_index: int) -> void:
 	elevator.recover_component("controller", 6.0)
 	elevator.status = "normal"
 	inspection_rate = clampf(inspection_rate + 10.0, 0.0, 100.0)
-	safety_score = clampf(safety_score + 3.0, 0.0, 100.0)
+	safety_score = clampf(safety_score + 2.5, 0.0, 100.0)
 	emit_signal("state_changed")
 
 func perform_preventive_maintenance(elevator_index: int) -> void:
-	var elevator := get_elevator(elevator_index)
+	var elevator: ElevatorData = get_elevator(elevator_index)
 	if elevator == null or money < 2400:
 		return
 	money -= 2400
@@ -132,41 +148,68 @@ func perform_preventive_maintenance(elevator_index: int) -> void:
 	elevator.recover_component("door_operator", 10.0)
 	elevator.recover_component("guide_rail", 10.0)
 	elevator.recover_component("hoist_rope", 8.0)
-	safety_score = clampf(safety_score + 1.5, 0.0, 100.0)
+	safety_score = clampf(safety_score + 1.6, 0.0, 100.0)
 	emit_signal("state_changed")
 
 func perform_emergency_repair(elevator_index: int) -> void:
-	var elevator := get_elevator(elevator_index)
+	var elevator: ElevatorData = get_elevator(elevator_index)
 	if elevator == null or money < 5200:
 		return
-	_resolve_fault_for_elevator(elevator)
+	_resolve_fault_for_elevator(elevator, "immediate")
 	emit_signal("state_changed")
 
-func _resolve_fault_for_elevator(elevator: ElevatorData) -> void:
-	money -= 5200
-	elevator.status = "warning"
-	elevator.wear = maxf(8.0, elevator.wear - 18.0)
-	elevator.breakdown_risk = maxf(0.0, elevator.breakdown_risk - 32.0)
-	elevator.recover_component("brake_system", 15.0)
-	elevator.recover_component("governor", 12.0)
-	elevator.recover_component("emergency_call", 8.0)
-	satisfaction = clampf(satisfaction + 2.2, 0.0, 100.0)
-	complaints = max(0, complaints - 2)
+func resolve_fault_for_elevator_id(elevator_id: int, mode: String) -> bool:
+	var target: ElevatorData = get_elevator_by_id(elevator_id)
+	if target == null:
+		return false
+	_resolve_fault_for_elevator(target, mode)
+	emit_signal("state_changed")
+	return true
+
+func _resolve_fault_for_elevator(elevator: ElevatorData, mode: String) -> void:
+	match mode:
+		"immediate":
+			if money < 5200:
+				return
+			money -= 5200
+			elevator.status = "warning"
+			elevator.wear = maxf(8.0, elevator.wear - 18.0)
+			elevator.breakdown_risk = maxf(0.0, elevator.breakdown_risk - 32.0)
+			elevator.recover_component("brake_system", 15.0)
+			elevator.recover_component("governor", 12.0)
+			elevator.recover_component("emergency_call", 8.0)
+			satisfaction = clampf(satisfaction + 2.2, 0.0, 100.0)
+			complaints = max(0, complaints - 2)
+		"delay":
+			elevator.status = "warning"
+			elevator.breakdown_risk = clampf(elevator.breakdown_risk + 6.0, 0.0, 100.0)
+			complaints += 1
+		"outsource":
+			if money < 3800:
+				return
+			money -= 3800
+			elevator.status = "warning"
+			elevator.wear = maxf(12.0, elevator.wear - 10.0)
+			elevator.breakdown_risk = maxf(0.0, elevator.breakdown_risk - 14.0)
+			elevator.recover_component("emergency_call", 6.0)
+			satisfaction = clampf(satisfaction + 0.5, 0.0, 100.0)
 
 func run_safety_campaign(campaign_id: String) -> bool:
 	if not CAMPAIGN_CATALOG.has(campaign_id) or money < 900:
 		return false
 	money -= 900
-	active_campaign_ticks[campaign_id] = int(CAMPAIGN_CATALOG[campaign_id][1])
+	var config: Array = CAMPAIGN_CATALOG[campaign_id]
+	active_campaign_ticks[campaign_id] = int(config[1])
 	satisfaction = clampf(satisfaction + 1.2, 0.0, 100.0)
 	emit_signal("state_changed")
 	return true
 
 func apply_upgrade(elevator_index: int, upgrade_id: String) -> bool:
-	var elevator := get_elevator(elevator_index)
+	var elevator: ElevatorData = get_elevator(elevator_index)
 	if elevator == null or elevator.has_upgrade(upgrade_id):
 		return false
-	var cost := {"door_sensor":2600, "speed_drive":2800, "maintenance_suite":3000, "durability_pack":3400, "capacity_tuning":2800}.get(upgrade_id, -1)
+	var cost_map: Dictionary = {"door_sensor":2600, "speed_drive":2800, "maintenance_suite":3000, "durability_pack":3400, "capacity_tuning":2800}
+	var cost: int = int(cost_map.get(upgrade_id, -1))
 	if cost < 0 or money < cost:
 		return false
 	money -= cost
@@ -186,64 +229,65 @@ func apply_effect(effect: Dictionary, target_elevator_id: int = -1) -> void:
 	satisfaction = clampf(satisfaction + float(effect.get("satisfaction", 0.0)), 0.0, 100.0)
 	complaints = max(0, complaints + int(effect.get("complaints", 0)))
 	if target_elevator_id >= 0:
-		var target := get_elevator_by_id(target_elevator_id)
+		var target: ElevatorData = get_elevator_by_id(target_elevator_id)
 		if target != null:
 			target.breakdown_risk = clampf(target.breakdown_risk + float(effect.get("risk", 0.0)), 0.0, 100.0)
 			target.wear = clampf(target.wear + float(effect.get("wear", 0.0)), 0.0, 100.0)
 	else:
-		for elevator in elevators:
+		for elevator: ElevatorData in elevators:
 			elevator.breakdown_risk = clampf(elevator.breakdown_risk + float(effect.get("risk", 0.0)), 0.0, 100.0)
 			elevator.wear = clampf(elevator.wear + float(effect.get("wear", 0.0)), 0.0, 100.0)
 	emit_signal("state_changed")
 
 func get_event_weight(event_id: String) -> float:
-	var w := 1.0
-	if event_id in ["door_delay", "door_sensor"] and active_campaign_ticks["door_safety"] > 0:
+	var w: float = 1.0
+	if event_id in ["door_delay", "door_sensor"] and int(active_campaign_ticks["door_safety"]) > 0:
 		w *= 0.62
-	if event_id == "overload_warn" and active_campaign_ticks["overload_notice"] > 0:
+	if event_id == "overload_warn" and int(active_campaign_ticks["overload_notice"]) > 0:
 		w *= 0.58
-	if event_id == "fault_real" and active_campaign_ticks["emergency_guide"] > 0:
+	if event_id == "fault_real" and int(active_campaign_ticks["emergency_guide"]) > 0:
 		w *= 0.72
 	return w
 
 func get_campaign_status_lines() -> Array[String]:
 	var out: Array[String] = []
-	for id in CAMPAIGN_CATALOG.keys():
-		var left := int(active_campaign_ticks[id])
+	for id: String in CAMPAIGN_CATALOG.keys():
+		var left: int = int(active_campaign_ticks[id])
 		if left > 0:
-			out.append("%s (%dt)" % [CAMPAIGN_CATALOG[id][0], left])
+			var cfg: Array = CAMPAIGN_CATALOG[id]
+			out.append("%s (%dt)" % [str(cfg[0]), left])
 	if out.is_empty():
 		out.append("활성 캠페인 없음")
 	return out
 
 func _tick_campaigns() -> void:
-	for k in active_campaign_ticks.keys():
-		if active_campaign_ticks[k] > 0:
-			active_campaign_ticks[k] -= 1
+	for k: String in active_campaign_ticks.keys():
+		if int(active_campaign_ticks[k]) > 0:
+			active_campaign_ticks[k] = int(active_campaign_ticks[k]) - 1
 
 func _generate_demand() -> void:
-	var peak_multiplier := 1.0
+	var peak_multiplier: float = 1.0
 	if tick_in_day >= 3 and tick_in_day <= 5:
 		peak_multiplier = 1.45
-	if active_campaign_ticks["senior_care"] > 0:
+	if int(active_campaign_ticks["senior_care"]) > 0:
 		peak_multiplier *= 0.92
-	for floor in FLOOR_COUNT:
-		var generated := int(round(randi_range(0, 3) * peak_multiplier))
+	for floor: int in FLOOR_COUNT:
+		var generated: int = int(round(randi_range(0, 3) * peak_multiplier))
 		floor_demands[floor] = clampi(floor_demands[floor] + generated, 0, 28)
 
 func _assign_targets() -> void:
-	var hot := _floors_by_demand_desc()
-	for i in elevators.size():
-		var e := elevators[i]
+	var hot: Array[int] = _floors_by_demand_desc()
+	for i: int in elevators.size():
+		var e: ElevatorData = elevators[i]
 		if e.status == "fault":
 			continue
 		e.target_floor = hot[min(i, hot.size() - 1)] + 1
 
 func _move_elevators() -> void:
-	for e in elevators:
+	for e: ElevatorData in elevators:
 		if e.status == "fault":
 			continue
-		var step := 2 if e.speed_factor > 1.08 and randf() < 0.45 else 1
+		var step: int = 2 if e.speed_factor > 1.08 and randf() < 0.45 else 1
 		if e.current_floor < e.target_floor:
 			e.current_floor = min(e.target_floor, e.current_floor + step)
 			e.status = "busy"
@@ -251,19 +295,19 @@ func _move_elevators() -> void:
 			e.current_floor = max(e.target_floor, e.current_floor - step)
 			e.status = "busy"
 		else:
-			var idx := e.current_floor - 1
-			var throughput := 3 + (2 if e.has_upgrade("capacity_tuning") else 0)
-			throughput = int(round(throughput * e.speed_factor))
-			var served := min(floor_demands[idx], throughput)
+			var idx: int = e.current_floor - 1
+			var throughput: int = 3 + (2 if e.has_upgrade("capacity_tuning") else 0)
+			throughput = int(round(float(throughput) * e.speed_factor))
+			var served: int = min(floor_demands[idx], throughput)
 			floor_demands[idx] -= served
 			e.load = float(served) / float(max(1, throughput))
 			e.status = "normal" if e.breakdown_risk < 45.0 else "warning"
 
 func _update_degradation() -> void:
-	for e in elevators:
+	for e: ElevatorData in elevators:
 		if e.status == "fault":
 			continue
-		var wear_gain := (0.8 + e.load * 1.2 + float(e.age_years) * 0.03) / e.durability_factor
+		var wear_gain: float = (0.8 + e.load * 1.2 + float(e.age_years) * 0.03) / e.durability_factor
 		if e.has_upgrade("maintenance_suite"):
 			wear_gain *= 0.78
 		e.wear = clampf(e.wear + wear_gain, 0.0, 100.0)
@@ -272,9 +316,9 @@ func _update_degradation() -> void:
 		e.degrade_component("hoist_rope", 0.6)
 		if day - e.last_inspection_day > INSPECTION_INTERVAL_DAYS:
 			e.status = "inspection_due"
-			for c in ["brake_system", "controller", "door_interlock"]:
+			for c: String in ["brake_system", "controller", "door_interlock"]:
 				e.degrade_component(c, 0.9)
-		var risk_gain := 0.45 + e.wear * 0.017
+		var risk_gain: float = 0.45 + e.wear * 0.017
 		risk_gain += _component_risk_penalty(e)
 		if e.has_upgrade("door_sensor"):
 			risk_gain *= 0.92
@@ -285,84 +329,94 @@ func _update_degradation() -> void:
 			satisfaction = clampf(satisfaction - 7.0, 0.0, 100.0)
 
 func _component_risk_penalty(e: ElevatorData) -> float:
-	var penalty := 0.0
-	for cid in e.component_health.keys():
-		var h := float(e.component_health[cid])
-		if h < 45.0: penalty += 0.45
-		if h < 30.0: penalty += 0.65
+	var penalty: float = 0.0
+	for cid: String in e.component_health.keys():
+		var h: float = float(e.component_health[cid])
+		if h < 45.0:
+			penalty += 0.45
+		if h < 30.0:
+			penalty += 0.65
 	return penalty
 
 func _update_global_scores() -> void:
-	var waiting := _total_demand()
+	var waiting: int = _total_demand()
 	if waiting > 18:
 		satisfaction = clampf(satisfaction - 1.8, 0.0, 100.0)
 		complaints += 1
 	if waiting > 25:
 		satisfaction = clampf(satisfaction - 2.8, 0.0, 100.0)
 		complaints += 1
-	if active_campaign_ticks["emergency_guide"] > 0:
+	if int(active_campaign_ticks["emergency_guide"]) > 0:
 		complaints = max(0, complaints - 1)
-	inspection_rate = clampf(inspection_rate - 0.55, 0.0, 100.0)
-	safety_score = clampf(safety_score - (0.8 if _count_inspection_due() > 0 else -0.2), 0.0, 100.0)
+	inspection_rate = clampf(inspection_rate - 0.45, 0.0, 100.0)
+	if _count_inspection_due() > 0:
+		safety_score = clampf(safety_score - 0.55, 0.0, 100.0)
+	else:
+		safety_score = clampf(safety_score - 0.02, 0.0, 100.0)
 	if complaints > 12:
 		money = max(0, money - 350)
 
 func _roll_daily_goal() -> void:
-	var goals := [
-		{"id":"fault_zero", "label":"오늘 fault 0건 유지", "reward":1600},
-		{"id":"complaints_low", "label":"민원 3건 이하 유지", "reward":1400},
-		{"id":"inspection_push", "label":"점검률 80 이상 달성", "reward":1500},
-		{"id":"wear_control", "label":"A호기 마모도 60 이하", "reward":1500}
+	var goals: Array[Dictionary] = [
+		{"id":"fault_zero", "label":"오늘 fault 0건 유지", "reward":2200},
+		{"id":"complaints_low", "label":"민원 3건 이하 유지", "reward":1900},
+		{"id":"inspection_push", "label":"점검률 80 이상 달성", "reward":2000},
+		{"id":"wear_control", "label":"A호기 마모도 60 이하", "reward":2000}
 	]
 	current_goal = goals[randi_range(0, goals.size() - 1)]
 
 func _evaluate_goal() -> Dictionary:
-	var success := false
-	match current_goal.get("id", ""):
+	var success: bool = false
+	var goal_id: String = str(current_goal.get("id", ""))
+	match goal_id:
 		"fault_zero": success = _count_faults() == 0
 		"complaints_low": success = complaints <= 3
 		"inspection_push": success = inspection_rate >= 80.0
 		"wear_control":
-			var a := get_elevator_by_id(1)
+			var a: ElevatorData = get_elevator_by_id(1)
 			success = a != null and a.wear <= 60.0
-	return {"success": success, "reward": current_goal.get("reward", 0)}
+	return {"success": success, "reward": int(current_goal.get("reward", 0))}
 
 func _floors_by_demand_desc() -> Array[int]:
 	var idx: Array[int] = []
-	for i in FLOOR_COUNT: idx.append(i)
+	for i: int in FLOOR_COUNT:
+		idx.append(i)
 	idx.sort_custom(func(a: int, b: int) -> bool: return floor_demands[a] > floor_demands[b])
 	return idx
 
 func _total_demand() -> int:
-	var total := 0
-	for v in floor_demands: total += v
+	var total: int = 0
+	for v: int in floor_demands:
+		total += v
 	return total
 
 func _count_faults() -> int:
-	var c := 0
-	for e in elevators:
-		if e.status == "fault": c += 1
+	var c: int = 0
+	for e: ElevatorData in elevators:
+		if e.status == "fault":
+			c += 1
 	return c
 
 func _count_inspection_due() -> int:
-	var c := 0
-	for e in elevators:
-		if day - e.last_inspection_day > INSPECTION_INTERVAL_DAYS: c += 1
+	var c: int = 0
+	for e: ElevatorData in elevators:
+		if day - e.last_inspection_day > INSPECTION_INTERVAL_DAYS:
+			c += 1
 	return c
 
 func _most_critical_component_name() -> String:
-	var min_h := 999.0
-	var min_id := "door_sensor"
-	for e in elevators:
-		for cid in e.component_health.keys():
-			var h := float(e.component_health[cid])
+	var min_h: float = 999.0
+	var min_id: String = "door_sensor"
+	for e: ElevatorData in elevators:
+		for cid: String in e.component_health.keys():
+			var h: float = float(e.component_health[cid])
 			if h < min_h:
 				min_h = h
 				min_id = cid
-	return COMPONENT_CATALOG[min_id][0]
+	return component_display_name(min_id)
 
 func _best_prevention_text() -> String:
-	if active_campaign_ticks["door_safety"] > 0:
+	if int(active_campaign_ticks["door_safety"]) > 0:
 		return "문 끼임 주의 안내가 문 관련 리스크를 낮췄습니다."
 	if inspection_rate > 75.0:
 		return "정기점검 이행으로 고장위험 상승을 억제했습니다."
@@ -373,14 +427,14 @@ func _missed_signal_text() -> String:
 		return "점검 기한 경과 호기가 있습니다."
 	if complaints > 8:
 		return "민원 누적 신호가 큽니다. 안내 강화가 필요합니다."
-	return "큰 위험 신호는 없지만 로프/레일 노후를 주시하세요."
+	return "큰 위험 신호는 없지만 권상 로프/가이드레일 노후를 주시하세요."
 
 func _next_recommendation_text() -> String:
 	if _count_faults() > 0:
-		return "긴급수리 후 비상통화/제동장치 상태를 우선 점검하세요."
+		return "긴급수리 후 비상통화 장치와 제동장치를 우선 점검하세요."
 	if _most_critical_component_name() in ["권상 로프", "가이드레일"]:
 		return "예방정비로 권상·가이드 계열 마모를 먼저 낮추세요."
 	return "문/과부하 안내 캠페인으로 피크 민원을 선제 억제하세요."
 
 func _daily_insight_text() -> String:
-	return "고장 후 수리보다, 취약 부품을 미리 보강할 때 안전 성과가 크게 향상됩니다."
+	return "고장 후 수리보다 취약 부품을 미리 보강할 때 안전 성과가 크게 향상됩니다."
