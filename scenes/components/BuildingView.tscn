@@ -1,0 +1,155 @@
+[gd_scene load_steps=3 format=3 uid="uid://dpxxjlwm0kbd3"]
+
+[ext_resource type="Script" path="res://scripts/ui/BuildingView.gd" id="1_jtxjd"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.082, 0.109, 0.164, 0.96)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.23, 0.30, 0.44, 0.9)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+content_margin_left = 14
+content_margin_top = 14
+content_margin_right = 14
+content_margin_bottom = 14
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cab"]
+bg_color = Color(0.19, 0.76, 0.48, 0.95)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[node name="BuildingView" type="PanelContainer"]
+custom_minimum_size = Vector2(0, 520)
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_jtxjd")
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="HBox" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="FloorColumn" type="VBoxContainer" parent="HBox"]
+custom_minimum_size = Vector2(130, 0)
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="HBox/FloorColumn"]
+layout_mode = 2
+text = "건물 상태"
+
+[node name="Demand5" type="Label" parent="HBox/FloorColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "5F 대기 0"
+
+[node name="Demand4" type="Label" parent="HBox/FloorColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "4F 대기 0"
+
+[node name="Demand3" type="Label" parent="HBox/FloorColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "3F 대기 0"
+
+[node name="Demand2" type="Label" parent="HBox/FloorColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "2F 대기 0"
+
+[node name="Demand1" type="Label" parent="HBox/FloorColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "1F 대기 0"
+
+[node name="ShaftArea" type="Control" parent="HBox"]
+custom_minimum_size = Vector2(300, 470)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ShaftA" type="ColorRect" parent="HBox/ShaftArea"]
+offset_left = 82.0
+offset_top = 20.0
+offset_right = 144.0
+offset_bottom = 450.0
+color = Color(0.14, 0.19, 0.28, 1)
+
+[node name="ShaftB" type="ColorRect" parent="HBox/ShaftArea"]
+offset_left = 172.0
+offset_top = 20.0
+offset_right = 234.0
+offset_bottom = 450.0
+color = Color(0.14, 0.19, 0.28, 1)
+
+[node name="FloorGuide5" type="Label" parent="HBox/ShaftArea"]
+offset_left = 8.0
+offset_top = 30.0
+offset_right = 70.0
+offset_bottom = 55.0
+text = "5층"
+
+[node name="FloorGuide4" type="Label" parent="HBox/ShaftArea"]
+offset_left = 8.0
+offset_top = 125.0
+offset_right = 70.0
+offset_bottom = 150.0
+text = "4층"
+
+[node name="FloorGuide3" type="Label" parent="HBox/ShaftArea"]
+offset_left = 8.0
+offset_top = 220.0
+offset_right = 70.0
+offset_bottom = 245.0
+text = "3층"
+
+[node name="FloorGuide2" type="Label" parent="HBox/ShaftArea"]
+offset_left = 8.0
+offset_top = 315.0
+offset_right = 70.0
+offset_bottom = 340.0
+text = "2층"
+
+[node name="FloorGuide1" type="Label" parent="HBox/ShaftArea"]
+offset_left = 8.0
+offset_top = 410.0
+offset_right = 70.0
+offset_bottom = 435.0
+text = "1층"
+
+[node name="CabA" type="PanelContainer" parent="HBox/ShaftArea"]
+unique_name_in_owner = true
+offset_left = 90.0
+offset_top = 420.0
+offset_right = 136.0
+offset_bottom = 446.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_cab")
+
+[node name="CabALabel" type="Label" parent="HBox/ShaftArea/CabA"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "A"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CabB" type="PanelContainer" parent="HBox/ShaftArea"]
+unique_name_in_owner = true
+offset_left = 180.0
+offset_top = 420.0
+offset_right = 226.0
+offset_bottom = 446.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_cab")
+
+[node name="CabBLabel" type="Label" parent="HBox/ShaftArea/CabB"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "B"
+horizontal_alignment = 1
+vertical_alignment = 1

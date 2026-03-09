@@ -1,0 +1,59 @@
+[gd_scene load_steps=3 format=3 uid="uid://dg1qq5rj6kpw0"]
+
+[ext_resource type="Script" path="res://scripts/ui/RoundReportPopup.gd" id="1_0f2el"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_report"]
+bg_color = Color(0.09, 0.11, 0.16, 0.98)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.35, 0.42, 0.56, 0.9)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+content_margin_left = 16
+content_margin_top = 16
+content_margin_right = 16
+content_margin_bottom = 16
+
+[node name="RoundReportPopup" type="CanvasLayer"]
+script = ExtResource("1_0f2el")
+
+[node name="Dim" type="ColorRect" parent="."]
+offset_right = 1600.0
+offset_bottom = 900.0
+color = Color(0, 0, 0, 0.42)
+
+[node name="Panel" type="PanelContainer" parent="."]
+offset_left = 480.0
+offset_top = 210.0
+offset_right = 1120.0
+offset_bottom = 670.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_report")
+
+[node name="VBox" type="VBoxContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="ReportTitle" type="Label" parent="Panel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Day 리포트"
+
+[node name="Metrics" type="Label" parent="Panel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "지표"
+
+[node name="Commentary" type="Label" parent="Panel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 2
+text = "코멘트"
+
+[node name="ContinueButton" type="Button" parent="Panel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "다음 Day 진행"

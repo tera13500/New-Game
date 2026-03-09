@@ -1,0 +1,62 @@
+[gd_scene load_steps=3 format=3 uid="uid://dwtyvpm0ws4ta"]
+
+[ext_resource type="Script" path="res://scripts/ui/ActionPanel.gd" id="1_mq8xq"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.078, 0.105, 0.16, 0.97)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.26, 0.34, 0.48, 0.9)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+content_margin_left = 12
+content_margin_top = 12
+content_margin_right = 12
+content_margin_bottom = 12
+
+[node name="ActionPanel" type="PanelContainer"]
+custom_minimum_size = Vector2(0, 110)
+script = ExtResource("1_mq8xq")
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="VBox" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ActionTitle" type="Label" parent="VBox"]
+layout_mode = 2
+text = "운영 액션"
+
+[node name="Buttons" type="GridContainer" parent="VBox"]
+layout_mode = 2
+columns = 5
+theme_override_constants/h_separation = 8
+
+[node name="InspectionButton" type="Button" parent="VBox/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "정기점검"
+
+[node name="PreventiveButton" type="Button" parent="VBox/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "예방정비"
+
+[node name="EmergencyButton" type="Button" parent="VBox/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "긴급수리"
+
+[node name="UpgradeButton" type="Button" parent="VBox/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "업그레이드"
+
+[node name="CampaignButton" type="Button" parent="VBox/Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "안내강화"
