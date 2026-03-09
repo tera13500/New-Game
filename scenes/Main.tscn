@@ -1,0 +1,316 @@
+[gd_scene load_steps=6 format=3 uid="uid://c7pfqyb8e1quv"]
+
+[ext_resource type="Script" path="res://scripts/Main.gd" id="1_0ly8w"]
+[ext_resource type="Script" path="res://scripts/GameState.gd" id="2_fwonn"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_topbar"]
+bg_color = Color(0.101961, 0.133333, 0.196078, 0.96)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.25098, 0.317647, 0.447059, 0.9)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+content_margin_left = 14
+content_margin_top = 10
+content_margin_right = 14
+content_margin_bottom = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_metric"]
+bg_color = Color(0.12549, 0.160784, 0.227451, 0.93)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+content_margin_left = 2
+content_margin_top = 2
+content_margin_right = 2
+content_margin_bottom = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_main"]
+bg_color = Color(0.0784314, 0.101961, 0.152941, 0.95)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.25098, 0.317647, 0.447059, 0.8)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+content_margin_left = 14
+content_margin_top = 14
+content_margin_right = 14
+content_margin_bottom = 14
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_0ly8w")
+
+[node name="GameState" type="Node" parent="."]
+script = ExtResource("2_fwonn")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.0588235, 0.0784314, 0.121569, 1)
+
+[node name="RootMargin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 18
+
+[node name="MainLayout" type="VBoxContainer" parent="RootMargin"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="TopBarCard" type="PanelContainer" parent="RootMargin/MainLayout"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 86)
+theme_override_styles/panel = SubResource("StyleBoxFlat_topbar")
+
+[node name="TopBarRow" type="HBoxContainer" parent="RootMargin/MainLayout/TopBarCard"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="MoneyCard" type="PanelContainer" parent="RootMargin/MainLayout/TopBarCard/TopBarRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_metric")
+
+[node name="MoneyPadding" type="MarginContainer" parent="RootMargin/MainLayout/TopBarCard/TopBarRow/MoneyCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
+
+[node name="MoneyVBox" type="VBoxContainer" parent="RootMargin/MainLayout/TopBarCard/TopBarRow/MoneyCard/MoneyPadding"]
+layout_mode = 2
+
+[node name="MoneyLabel" type="Label" parent="RootMargin/MainLayout/TopBarCard/TopBarRow/MoneyCard/MoneyPadding/MoneyVBox"]
+layout_mode = 2
+text = "예산"
+modulate = Color(0.72549, 0.780392, 0.87451, 1)
+
+[node name="MoneyValue" type="Label" parent="RootMargin/MainLayout/TopBarCard/TopBarRow/MoneyCard/MoneyPadding/MoneyVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0 원"
+
+[node name="SafetyCard" type="PanelContainer" parent="RootMargin/MainLayout/TopBarCard/TopBarRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_metric")
+
+[node name="SafetyPadding" type="MarginContainer" parent="RootMargin/MainLayout/TopBarCard/TopBarRow/SafetyCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
+
+[node name="SafetyVBox" type="VBoxContainer" parent="RootMargin/MainLayout/TopBarCard/TopBarRow/SafetyCard/SafetyPadding"]
+layout_mode = 2
+
+[node name="SafetyLabel" type="Label" parent="RootMargin/MainLayout/TopBarCard/TopBarRow/SafetyCard/SafetyPadding/SafetyVBox"]
+layout_mode = 2
+text = "안전 점수"
+modulate = Color(0.72549, 0.780392, 0.87451, 1)
+
+[node name="SafetyValue" type="Label" parent="RootMargin/MainLayout/TopBarCard/TopBarRow/SafetyCard/SafetyPadding/SafetyVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0"
+
+[node name="SatisfactionCard" type="PanelContainer" parent="RootMargin/MainLayout/TopBarCard/TopBarRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_metric")
+
+[node name="SatisfactionPadding" type="MarginContainer" parent="RootMargin/MainLayout/TopBarCard/TopBarRow/SatisfactionCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
+
+[node name="SatisfactionVBox" type="VBoxContainer" parent="RootMargin/MainLayout/TopBarCard/TopBarRow/SatisfactionCard/SatisfactionPadding"]
+layout_mode = 2
+
+[node name="SatisfactionLabel" type="Label" parent="RootMargin/MainLayout/TopBarCard/TopBarRow/SatisfactionCard/SatisfactionPadding/SatisfactionVBox"]
+layout_mode = 2
+text = "만족도"
+modulate = Color(0.72549, 0.780392, 0.87451, 1)
+
+[node name="SatisfactionValue" type="Label" parent="RootMargin/MainLayout/TopBarCard/TopBarRow/SatisfactionCard/SatisfactionPadding/SatisfactionVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0"
+
+[node name="InspectionCard" type="PanelContainer" parent="RootMargin/MainLayout/TopBarCard/TopBarRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_metric")
+
+[node name="InspectionPadding" type="MarginContainer" parent="RootMargin/MainLayout/TopBarCard/TopBarRow/InspectionCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
+
+[node name="InspectionVBox" type="VBoxContainer" parent="RootMargin/MainLayout/TopBarCard/TopBarRow/InspectionCard/InspectionPadding"]
+layout_mode = 2
+
+[node name="InspectionLabel" type="Label" parent="RootMargin/MainLayout/TopBarCard/TopBarRow/InspectionCard/InspectionPadding/InspectionVBox"]
+layout_mode = 2
+text = "점검률"
+modulate = Color(0.72549, 0.780392, 0.87451, 1)
+
+[node name="InspectionValue" type="Label" parent="RootMargin/MainLayout/TopBarCard/TopBarRow/InspectionCard/InspectionPadding/InspectionVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0%"
+
+[node name="ComplaintCard" type="PanelContainer" parent="RootMargin/MainLayout/TopBarCard/TopBarRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_metric")
+
+[node name="ComplaintPadding" type="MarginContainer" parent="RootMargin/MainLayout/TopBarCard/TopBarRow/ComplaintCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
+
+[node name="ComplaintVBox" type="VBoxContainer" parent="RootMargin/MainLayout/TopBarCard/TopBarRow/ComplaintCard/ComplaintPadding"]
+layout_mode = 2
+
+[node name="ComplaintLabel" type="Label" parent="RootMargin/MainLayout/TopBarCard/TopBarRow/ComplaintCard/ComplaintPadding/ComplaintVBox"]
+layout_mode = 2
+text = "민원"
+modulate = Color(0.72549, 0.780392, 0.87451, 1)
+
+[node name="ComplaintValue" type="Label" parent="RootMargin/MainLayout/TopBarCard/TopBarRow/ComplaintCard/ComplaintPadding/ComplaintVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0"
+
+[node name="BodyRow" type="HBoxContainer" parent="RootMargin/MainLayout"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="BuildingPlaceholder" type="PanelContainer" parent="RootMargin/MainLayout/BodyRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_main")
+
+[node name="BuildingText" type="Label" parent="RootMargin/MainLayout/BodyRow/BuildingPlaceholder"]
+layout_mode = 2
+text = "중앙 건물 뷰 (다음 단계 구현)"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RightPanel" type="PanelContainer" parent="RootMargin/MainLayout/BodyRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(320, 0)
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_main")
+
+[node name="RightPadding" type="MarginContainer" parent="RootMargin/MainLayout/BodyRow/RightPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="RightVBox" type="VBoxContainer" parent="RootMargin/MainLayout/BodyRow/RightPanel/RightPadding"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="PanelTitle" type="Label" parent="RootMargin/MainLayout/BodyRow/RightPanel/RightPadding/RightVBox"]
+layout_mode = 2
+text = "엘리베이터 상세 상태"
+
+[node name="ElevatorSelector" type="OptionButton" parent="RootMargin/MainLayout/BodyRow/RightPanel/RightPadding/RightVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="ElevatorName" type="Label" parent="RootMargin/MainLayout/BodyRow/RightPanel/RightPadding/RightVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "A호기"
+
+[node name="StatusBadge" type="Label" parent="RootMargin/MainLayout/BodyRow/RightPanel/RightPadding/RightVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "정상"
+
+[node name="Grid" type="GridContainer" parent="RootMargin/MainLayout/BodyRow/RightPanel/RightPadding/RightVBox"]
+layout_mode = 2
+columns = 2
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 8
+
+[node name="CurrentFloorLabel" type="Label" parent="RootMargin/MainLayout/BodyRow/RightPanel/RightPadding/RightVBox/Grid"]
+layout_mode = 2
+text = "현재 층"
+modulate = Color(0.72549, 0.780392, 0.87451, 1)
+
+[node name="CurrentFloorValue" type="Label" parent="RootMargin/MainLayout/BodyRow/RightPanel/RightPadding/RightVBox/Grid"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0층"
+
+[node name="WearLabel" type="Label" parent="RootMargin/MainLayout/BodyRow/RightPanel/RightPadding/RightVBox/Grid"]
+layout_mode = 2
+text = "마모도"
+modulate = Color(0.72549, 0.780392, 0.87451, 1)
+
+[node name="WearValue" type="Label" parent="RootMargin/MainLayout/BodyRow/RightPanel/RightPadding/RightVBox/Grid"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0%"
+
+[node name="RiskLabel" type="Label" parent="RootMargin/MainLayout/BodyRow/RightPanel/RightPadding/RightVBox/Grid"]
+layout_mode = 2
+text = "고장 위험도"
+modulate = Color(0.72549, 0.780392, 0.87451, 1)
+
+[node name="RiskValue" type="Label" parent="RootMargin/MainLayout/BodyRow/RightPanel/RightPadding/RightVBox/Grid"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0%"
+
+[node name="InspectionDayLabel" type="Label" parent="RootMargin/MainLayout/BodyRow/RightPanel/RightPadding/RightVBox/Grid"]
+layout_mode = 2
+text = "최근 점검"
+modulate = Color(0.72549, 0.780392, 0.87451, 1)
+
+[node name="InspectionDayValue" type="Label" parent="RootMargin/MainLayout/BodyRow/RightPanel/RightPadding/RightVBox/Grid"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0일 전"
