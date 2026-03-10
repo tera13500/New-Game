@@ -18,18 +18,22 @@ func show_codex(unlocked_components: Array[String], catalog: Dictionary, earned_
 			continue
 		var entry: Array = catalog[cid]
 		var row: PanelContainer = PanelContainer.new()
-		row.custom_minimum_size = Vector2(0, 70)
+		row.custom_minimum_size = Vector2(0, 74)
 		var sb: StyleBoxFlat = StyleBoxFlat.new()
-		sb.bg_color = Color("#28324d")
-		sb.border_width_left = 2
-		sb.border_width_top = 2
-		sb.border_width_right = 2
-		sb.border_width_bottom = 2
-		sb.border_color = Color("#5f7db8")
+		sb.bg_color = Color("#22304a")
+		sb.border_width_left = 1
+		sb.border_width_top = 1
+		sb.border_width_right = 1
+		sb.border_width_bottom = 1
+		sb.border_color = Color("#3d5a80")
+		sb.corner_radius_top_left = 5
+		sb.corner_radius_top_right = 5
+		sb.corner_radius_bottom_right = 5
+		sb.corner_radius_bottom_left = 5
 		row.add_theme_stylebox_override("panel", sb)
 		var vb: VBoxContainer = VBoxContainer.new()
 		var title: Label = Label.new()
-		title.text = "◆ %s" % str(entry[0])
+		title.text = "%s" % str(entry[0])
 		title.theme_type_variation = "SubTitleLabel"
 		var desc: Label = Label.new()
 		desc.text = "%s / 역할: %s" % [str(entry[1]), str(entry[2])]
@@ -40,5 +44,7 @@ func show_codex(unlocked_components: Array[String], catalog: Dictionary, earned_
 		row.add_child(vb)
 		%CardList.add_child(row)
 	%TitleList.text = "획득 칭호: %s" % ("없음" if earned_titles.is_empty() else ", ".join(earned_titles))
-	%SubTitle.text = "새 장치 해금 시 운영 안정성과 선택지가 확장됩니다."
+	%SubTitle.text = "장치 해금은 운영 안정성과 선택지를 확장합니다."
 	visible = true
+	%Panel.modulate.a = 0.0
+	create_tween().tween_property(%Panel, "modulate:a", 1.0, 0.14)

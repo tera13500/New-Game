@@ -46,38 +46,41 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0.04, 0.06, 0.1, 1)
+color = Color(0.058824, 0.0784314, 0.12549, 1)
 
 [node name="ShaftDecorA" type="ColorRect" parent="."]
+unique_name_in_owner = true
 offset_left = 120.0
 offset_top = 140.0
 offset_right = 190.0
 offset_bottom = 940.0
-color = Color(0.11, 0.16, 0.24, 0.55)
+color = Color(0.137255, 0.188235, 0.290196, 0.46)
 
 [node name="ShaftDecorB" type="ColorRect" parent="."]
+unique_name_in_owner = true
 offset_left = 240.0
 offset_top = 140.0
 offset_right = 310.0
 offset_bottom = 940.0
-color = Color(0.11, 0.16, 0.24, 0.55)
+color = Color(0.137255, 0.188235, 0.290196, 0.46)
 
 [node name="ShaftDecorC" type="ColorRect" parent="."]
+unique_name_in_owner = true
 offset_left = 1610.0
 offset_top = 140.0
 offset_right = 1680.0
 offset_bottom = 940.0
-color = Color(0.11, 0.16, 0.24, 0.55)
+color = Color(0.137255, 0.188235, 0.290196, 0.46)
 
 [node name="PixelGrid" type="Label" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-text = "■ □ ■ □ ■ □ ■ □ ■ □ ■\n□ ■ □ ■ □ ■ □ ■ □ ■ □\n■ □ ■ □ ■ □ ■ □ ■ □ ■"
+text = "──────────────  OPERATIONS GRID  ──────────────"
 horizontal_alignment = 1
 vertical_alignment = 1
-modulate = Color(0.39, 0.58, 0.74, 0.23)
+modulate = Color(0.4, 0.75, 0.95, 0.2)
 
 [node name="BuildingSilhouette" type="Label" parent="."]
 offset_left = 40.0
@@ -86,7 +89,7 @@ offset_right = 1880.0
 offset_bottom = 1030.0
 text = "▇▇▇  ▇▇▇▇  ▇▇▇▇▇   ▇▇▇▇   ▇▇▇"
 horizontal_alignment = 1
-modulate = Color(0.45, 0.62, 0.78, 0.35)
+modulate = Color(0.31, 0.56, 0.79, 0.28)
 
 [node name="Center" type="CenterContainer" parent="."]
 layout_mode = 1
@@ -114,7 +117,7 @@ theme_override_font_sizes/font_size = 48
 theme_type_variation = &"SubTitleLabel"
 unique_name_in_owner = true
 layout_mode = 2
-text = "v1.1.11"
+text = "v1.1.12"
 horizontal_alignment = 1
 modulate = Color(0.56, 0.84, 1, 1)
 theme_override_font_sizes/font_size = 20
@@ -122,7 +125,7 @@ theme_override_font_sizes/font_size = 20
 [node name="Intro" type="Label" parent="Center/Panel/VBox"]
 layout_mode = 2
 autowrap_mode = 2
-text = "엘리베이터 2대를 운영하며 안전, 점검, 민원, 만족도를 균형 관리하는\n도트 감성 운영 시뮬레이션 게임입니다."
+text = "엘리베이터 2대를 운영하며 안전, 점검, 민원, 만족도를 균형 관리하는\n현대적 HUD 운영 시뮬레이션 게임입니다."
 theme_override_font_sizes/font_size = 20
 
 [node name="Role" type="Label" parent="Center/Panel/VBox"]

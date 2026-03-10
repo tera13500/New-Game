@@ -1,22 +1,26 @@
 extends Node
 
-const PIXEL_FONT_PATH: String = "res://assets/fonts/pixel_ko.ttf"
+const UI_FONT_PATH: String = "res://assets/fonts/ui_font.ttf"
 
 var start_with_tutorial: bool = true
 var first_run: bool = true
 
-func try_apply_pixel_font(theme: Theme) -> bool:
-	if theme == null or not FileAccess.file_exists(PIXEL_FONT_PATH):
+func try_apply_ui_font(theme: Theme) -> bool:
+	if theme == null:
 		return false
-	var pixel_font: FontFile = FontFile.new()
-	pixel_font.font_data = FileAccess.get_file_as_bytes(PIXEL_FONT_PATH)
-	theme.default_font = pixel_font
-	theme.set_font("font", "Label", pixel_font)
-	theme.set_font("font", "Button", pixel_font)
-	theme.set_font("font", "HeadingLabel", pixel_font)
-	theme.set_font("font", "SubTitleLabel", pixel_font)
-	theme.set_font("font", "SmallLabel", pixel_font)
-	theme.set_font("font", "CardValueLabel", pixel_font)
-	theme.set_font("font", "LogLabel", pixel_font)
-	theme.set_font("font", "BadgeLabel", pixel_font)
+	var ui_font: Font = _build_font_resource()
+	if ui_font == null:
+		return false
+	theme.default_font = ui_font
+	for variation: String in ["Label", "Button", "HeadingLabel", "SubTitleLabel", "SmallLabel", "CardValueLabel", "LogLabel", "BadgeLabel"]:
+		theme.set_font("font", variation, ui_font)
 	return true
+
+func _build_font_resource() -> Font:
+	if FileAccess.file_exists(UI_FONT_PATH):
+		var file_font: FontFile = FontFile.new()
+		file_font.font_data = FileAccess.get_file_as_bytes(UI_FONT_PATH)
+		return file_font
+	var system_font: SystemFont = SystemFont.new()
+	system_font.font_names = PackedStringArray(["Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", "Arial"])
+	return system_font

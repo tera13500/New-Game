@@ -60,7 +60,7 @@ var _tutorial_waiting_action: String = ""
 var _tutorial_pages: Array[Dictionary] = GameText.TUTORIAL_PAGES
 
 func _ready() -> void:
-	AppState.try_apply_pixel_font(get_theme())
+	AppState.try_apply_ui_font(get_theme())
 	randomize()
 	version_label.text = "v%s" % GameState.GAME_VERSION
 	_connect_signals()
@@ -99,6 +99,9 @@ func _on_tick() -> void:
 	if tutorial_overlay.visible:
 		return
 	game_state.advance_tick()
+	if game_state.is_game_over():
+		_show_game_over(game_state.game_over_reason())
+		return
 	if _event_cooldown_ticks > 0:
 		_event_cooldown_ticks -= 1
 		return
@@ -258,7 +261,7 @@ func _refresh_right_panel() -> void:
 	wear_value.text = "%.1f%%" % elevator.wear
 	risk_value.text = "%.1f%%" % elevator.breakdown_risk
 	inspection_day_value.text = "%d일 전" % max(0, game_state.day - elevator.last_inspection_day)
-	work_summary.text = "운행 요약: 목표 %d층 · 부하 %.0f%%" % [elevator.target_floor, elevator.load * 100.0]
+	work_summary.text = "목표층 %d · 부하 %.0f%% · 상태 %s" % [elevator.target_floor, elevator.load * 100.0, elevator.status_label()]
 	upgrades_value.text = "업그레이드: %s" % elevator.installed_upgrades_text()
 	component_summary.text = _build_component_summary(elevator)
 	campaign_summary.text = "캠페인\n%s" % "\n".join(game_state.get_campaign_status_lines())
@@ -274,11 +277,11 @@ func _build_component_summary(elevator: ElevatorData) -> String:
 	return "핵심 장치 TOP3\n" + ("\n".join(lines.slice(0, 3)) if not lines.is_empty() else "• 해금된 장치 없음")
 
 func _build_recommendation(elevator: ElevatorData) -> String:
-	if elevator.status == "fault": return "긴급수리 → 비상통화 점검"
+	if elevator.status == "fault": return "긴급수리 우선"
 	if elevator.status == "inspecting": return "점검 완료까지 대기 수요 분산 필요"
-	if game_state.day - elevator.last_inspection_day > GameState.INSPECTION_INTERVAL_DAYS: return "정기점검으로 제동·제어계 안정화"
-	if elevator.wear > 70.0: return "예방정비로 마모 리스크 완화"
-	if game_state.complaints > 6: return "안내강화로 혼잡 민원 우선 대응"
+	if game_state.day - elevator.last_inspection_day > GameState.INSPECTION_INTERVAL_DAYS: return "정기점검 실행"
+	if elevator.wear > 70.0: return "예방정비로 리스크 완화"
+	if game_state.complaints > 6: return "캠페인으로 민원 억제"
 	return "균형 운영 유지"
 
 func _render_recent_logs() -> void:
@@ -350,8 +353,8 @@ func _finish_tutorial() -> void:
 	round_manager.start()
 
 func _add_recent_log(level: String, msg: String) -> void:
-	var icon_map: Dictionary = {"warn": "⚠", "check": "🛠", "info": "ℹ"}
-	var color_map: Dictionary = {"warn": Color("#f2c14e"), "check": Color("#6ee787"), "info": Color("#61afef")}
+	var icon_map: Dictionary = {"warn": "▲", "check": "■", "info": "●"}
+	var color_map: Dictionary = {"warn": Color("#f2b84b"), "check": Color("#7fdc8a"), "info": Color("#66bfff")}
 	var safe_msg: String = msg if msg.length() <= 36 else msg.substr(0, 36) + "…"
 	_recent_logs.push_front({"icon": icon_map.get(level, "ℹ"), "text": safe_msg, "color": color_map.get(level, Color.WHITE)})
 	if _recent_logs.size() > GameBalance.MAX_RECENT_LOGS:

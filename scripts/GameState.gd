@@ -1,7 +1,7 @@
 extends Node
 class_name GameState
 
-const GAME_VERSION: String = "1.1.11"
+const GAME_VERSION: String = "1.1.12"
 const FLOOR_COUNT: int = 5
 const ELEVATOR_COUNT: int = 2
 const INSPECTION_INTERVAL_DAYS: int = 4
@@ -94,6 +94,11 @@ func finish_day() -> Dictionary:
 	var avg_waiting: float = _total_demand() / float(FLOOR_COUNT)
 	var goal_result: Dictionary = _evaluate_goal()
 	var fault_count: int = _count_faults()
+	if fault_count == 0:
+		no_fault_streak += 1
+		best_no_fault_streak = max(best_no_fault_streak, no_fault_streak)
+	else:
+		no_fault_streak = 0
 	var milestones: Array[String] = []
 	var milestone_reward: int = 0
 	if no_fault_streak >= 5 and no_fault_streak % 5 == 0:
@@ -105,11 +110,9 @@ func finish_day() -> Dictionary:
 	if complaints == 0:
 		milestones.append("민원 0건 유지")
 		milestone_reward += 600
-	if fault_count == 0:
-		no_fault_streak += 1
-		best_no_fault_streak = max(best_no_fault_streak, no_fault_streak)
-	else:
-		no_fault_streak = 0
+	if inspection_rate >= 90.0:
+		milestones.append("고점검 운영 달성")
+		milestone_reward += 500
 	var summary: Dictionary = {
 		"day": day,
 		"avg_waiting": avg_waiting,

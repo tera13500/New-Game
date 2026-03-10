@@ -18,13 +18,13 @@ func show_report(summary: Dictionary, game_state: GameState) -> void:
 		int(summary.get("inspection_overdue", 0))
 	]
 	var goal_result: Dictionary = summary.get("goal_result", {"success": false, "reward": 0})
-	var goal_line: String = "오늘 목표: %s (%s)" % [
+	var goal_line: String = "목표: %s / %s" % [
 		summary.get("goal_text", "-"),
-		"성공 +%d원" % int(goal_result.get("reward", 0)) if bool(goal_result.get("success", false)) else "실패"
+		"성공 +%d원" % int(goal_result.get("reward", 0)) if bool(goal_result.get("success", false)) else "미달성"
 	]
 	var milestones: Array = summary.get("milestones", [])
 	var milestone_text: String = "없음" if milestones.is_empty() else ", ".join(milestones)
-	%Commentary.text = "%s\n핵심 포인트\n- 예방 성과: %s\n- 취약 장치: %s\n- 놓친 신호: %s\n- 다음 권장 액션: %s\n- 무고장 연속일: %d (최고 %d)\n- 마일스톤: %s (+%d원)" % [
+	%Commentary.text = "%s\n- 예방 성과: %s\n- 취약 장치: %s\n- 놓친 신호: %s\n- 다음 권장: %s\n- 무고장 연속: %d일 (최고 %d일)\n- 마일스톤: %s (+%d원)" % [
 		goal_line,
 		summary.get("best_prevention", "-"),
 		summary.get("critical_component", "-"),
@@ -37,3 +37,6 @@ func show_report(summary: Dictionary, game_state: GameState) -> void:
 	]
 	%Footer.text = "예산 %s원 | 안전 %.1f | 만족 %.1f | 민원 %d\n%s" % [GameText.format_number(game_state.money), game_state.safety_score, game_state.satisfaction, game_state.complaints, str(summary.get("game_over_warning", "안정 운영 중"))]
 	visible = true
+	%Panel.modulate.a = 0.0
+	var tween: Tween = create_tween()
+	tween.tween_property(%Panel, "modulate:a", 1.0, 0.16)
