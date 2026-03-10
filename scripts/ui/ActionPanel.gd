@@ -39,30 +39,19 @@ func set_budget(money: int) -> void:
 	_apply_budget_state(emergency_button, money >= GameBalance.action_cost("emergency"), GameBalance.action_cost("emergency"))
 	_apply_budget_state(campaign_button, money >= GameBalance.action_cost("campaign"), GameBalance.action_cost("campaign"))
 	upgrade_button.disabled = money < GameBalance.upgrade_cost("door_sensor")
-	upgrade_button.tooltip_text = "업그레이드 최소 비용 ₩%s 필요" % _format_number(GameBalance.upgrade_cost("door_sensor")) if upgrade_button.disabled else "상세 비용은 선택 팝업에서 확인"
+	upgrade_button.tooltip_text = "업그레이드 최소 비용 ₩%s 필요" % GameText.format_number(GameBalance.upgrade_cost("door_sensor")) if upgrade_button.disabled else "상세 비용은 선택 팝업에서 확인"
 
 func _apply_budget_state(button: Button, can_use: bool, needed: int) -> void:
 	button.disabled = not can_use
 	if can_use:
 		return
-	button.tooltip_text = "예산 부족 · 필요 금액 ₩%s" % _format_number(needed)
+	button.tooltip_text = "예산 부족 · 필요 금액 ₩%s" % GameText.format_number(needed)
 
 func _setup_button(button: Button, label: String, cost: int, tip: String) -> void:
 	button.custom_minimum_size = Vector2(0, 50)
-	button.text = "%s\n%s" % [label, "₩%s" % _format_number(cost) if cost > 0 else "상세 비용 팝업"]
+	button.text = "%s\n%s" % [label, "₩%s" % GameText.format_number(cost) if cost > 0 else "상세 비용 팝업"]
 	button.tooltip_text = tip
 
 func _on_campaign_selected(index: int) -> void:
 	var ids: Array[String] = ["door_safety", "overload_notice", "emergency_guide", "senior_care"]
 	emit_signal("campaign_changed", ids[index])
-
-func _format_number(value: int) -> String:
-	var text: String = str(value)
-	var out: String = ""
-	var count: int = 0
-	for i: int in range(text.length() - 1, -1, -1):
-		out = text[i] + out
-		count += 1
-		if count % 3 == 0 and i > 0:
-			out = "," + out
-	return out

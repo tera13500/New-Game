@@ -59,6 +59,7 @@ func status_label() -> String:
 		"risk": return "위험"
 		"fault": return "고장"
 		"inspection_due": return "점검필요"
+		"inspecting": return "점검중"
 		_: return "알 수 없음"
 
 func installed_upgrades_text() -> String:

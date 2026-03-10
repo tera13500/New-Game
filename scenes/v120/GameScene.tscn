@@ -1,0 +1,331 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/v120/core/GameController.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/v120/components/BuildingView.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/v120/components/ActionBar.tscn" id="4"]
+
+[sub_resource type="StyleBoxFlat" id="1"]
+bg_color = Color(0.0941176, 0.129412, 0.196078, 0.98)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.239216, 0.352941, 0.501961, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+content_margin_left = 10
+content_margin_top = 8
+content_margin_right = 10
+content_margin_bottom = 8
+
+[node name="GameSceneV120" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1")
+
+[node name="TickTimer" type="Timer" parent="."]
+unique_name_in_owner = true
+wait_time = 1.1
+
+[node name="BG" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.058824, 0.0784314, 0.12549, 1)
+
+[node name="Root" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="Layout" type="VBoxContainer" parent="Root"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TopBar" type="PanelContainer" parent="Root/Layout"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("1")
+
+[node name="TopRow" type="HBoxContainer" parent="Root/Layout/TopBar"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="BudgetCard" type="PanelContainer" parent="Root/Layout/TopBar/TopRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("1")
+[node name="BV" type="VBoxContainer" parent="Root/Layout/TopBar/TopRow/BudgetCard"]
+layout_mode = 2
+[node name="BLabel" type="Label" parent="Root/Layout/TopBar/TopRow/BudgetCard/BV"]
+text = "예산"
+[node name="BudgetValue" type="Label" parent="Root/Layout/TopBar/TopRow/BudgetCard/BV"]
+unique_name_in_owner = true
+theme_type_variation = &"CardValueLabel"
+text = "0"
+
+[node name="SafetyCard" type="PanelContainer" parent="Root/Layout/TopBar/TopRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("1")
+[node name="SV" type="VBoxContainer" parent="Root/Layout/TopBar/TopRow/SafetyCard"]
+[node name="SLabel" type="Label" parent="Root/Layout/TopBar/TopRow/SafetyCard/SV"]
+text = "안전도"
+[node name="SafetyValue" type="Label" parent="Root/Layout/TopBar/TopRow/SafetyCard/SV"]
+unique_name_in_owner = true
+theme_type_variation = &"CardValueLabel"
+text = "0"
+
+[node name="SatCard" type="PanelContainer" parent="Root/Layout/TopBar/TopRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("1")
+[node name="SaV" type="VBoxContainer" parent="Root/Layout/TopBar/TopRow/SatCard"]
+[node name="SaLabel" type="Label" parent="Root/Layout/TopBar/TopRow/SatCard/SaV"]
+text = "이용자 만족도"
+[node name="SatisfactionValue" type="Label" parent="Root/Layout/TopBar/TopRow/SatCard/SaV"]
+unique_name_in_owner = true
+theme_type_variation = &"CardValueLabel"
+text = "0"
+
+[node name="CheckCard" type="PanelContainer" parent="Root/Layout/TopBar/TopRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("1")
+[node name="CV" type="VBoxContainer" parent="Root/Layout/TopBar/TopRow/CheckCard"]
+[node name="CLabel" type="Label" parent="Root/Layout/TopBar/TopRow/CheckCard/CV"]
+text = "자체점검 이행률"
+[node name="CheckRateValue" type="Label" parent="Root/Layout/TopBar/TopRow/CheckCard/CV"]
+unique_name_in_owner = true
+theme_type_variation = &"CardValueLabel"
+text = "0"
+
+[node name="ComplainCard" type="PanelContainer" parent="Root/Layout/TopBar/TopRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("1")
+[node name="CoV" type="VBoxContainer" parent="Root/Layout/TopBar/TopRow/ComplainCard"]
+[node name="CoLabel" type="Label" parent="Root/Layout/TopBar/TopRow/ComplainCard/CoV"]
+text = "민원"
+[node name="ComplaintValue" type="Label" parent="Root/Layout/TopBar/TopRow/ComplainCard/CoV"]
+unique_name_in_owner = true
+theme_type_variation = &"CardValueLabel"
+text = "0"
+
+[node name="TimeCard" type="PanelContainer" parent="Root/Layout/TopBar/TopRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("1")
+[node name="TV" type="VBoxContainer" parent="Root/Layout/TopBar/TopRow/TimeCard"]
+[node name="TLabel" type="Label" parent="Root/Layout/TopBar/TopRow/TimeCard/TV"]
+text = "운영 시간"
+[node name="TimeValue" type="Label" parent="Root/Layout/TopBar/TopRow/TimeCard/TV"]
+unique_name_in_owner = true
+theme_type_variation = &"CardValueLabel"
+text = "Day 1 / Tick 0"
+[node name="VersionLabel" type="Label" parent="Root/Layout/TopBar/TopRow/TimeCard/TV"]
+unique_name_in_owner = true
+text = "v1.2.0"
+
+[node name="SpeedRow" type="HBoxContainer" parent="Root/Layout"]
+layout_mode = 2
+alignment = 2
+theme_override_constants/separation = 8
+[node name="SpeedLabel" type="Label" parent="Root/Layout/SpeedRow"]
+text = "게임 속도"
+[node name="Speed1x" type="Button" parent="Root/Layout/SpeedRow"]
+unique_name_in_owner = true
+text = "1x"
+[node name="Speed2x" type="Button" parent="Root/Layout/SpeedRow"]
+unique_name_in_owner = true
+text = "2x"
+[node name="Speed3x" type="Button" parent="Root/Layout/SpeedRow"]
+unique_name_in_owner = true
+text = "3x"
+
+[node name="Middle" type="HBoxContainer" parent="Root/Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="BuildingView" parent="Root/Layout/Middle" instance=ExtResource("3")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="RightPanel" type="PanelContainer" parent="Root/Layout/Middle"]
+custom_minimum_size = Vector2(460, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("1")
+
+[node name="RightVBox" type="VBoxContainer" parent="Root/Layout/Middle/RightPanel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+[node name="SelectorRow" type="HBoxContainer" parent="Root/Layout/Middle/RightPanel/RightVBox"]
+[node name="SelectorLabel" type="Label" parent="Root/Layout/Middle/RightPanel/RightVBox/SelectorRow"]
+text = "호기 선택"
+[node name="ElevatorSelector" type="OptionButton" parent="Root/Layout/Middle/RightPanel/RightVBox/SelectorRow"]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+
+[node name="SelectedStatus" type="Label" parent="Root/Layout/Middle/RightPanel/RightVBox"]
+unique_name_in_owner = true
+theme_type_variation = &"SubTitleLabel"
+text = "A호기 | 정상"
+[node name="SelectedMetrics" type="Label" parent="Root/Layout/Middle/RightPanel/RightVBox"]
+unique_name_in_owner = true
+text = "마모"
+[node name="ComponentTitle" type="Label" parent="Root/Layout/Middle/RightPanel/RightVBox"]
+text = "핵심 장치 상태"
+[node name="ComponentValue" type="Label" parent="Root/Layout/Middle/RightPanel/RightVBox"]
+unique_name_in_owner = true
+autowrap_mode = 2
+text = "-"
+[node name="RecommendTitle" type="Label" parent="Root/Layout/Middle/RightPanel/RightVBox"]
+text = "권장 조치"
+[node name="RecommendValue" type="Label" parent="Root/Layout/Middle/RightPanel/RightVBox"]
+unique_name_in_owner = true
+autowrap_mode = 2
+text = "-"
+[node name="GoalTitle" type="Label" parent="Root/Layout/Middle/RightPanel/RightVBox"]
+text = "오늘 목표"
+[node name="GoalValue" type="Label" parent="Root/Layout/Middle/RightPanel/RightVBox"]
+unique_name_in_owner = true
+autowrap_mode = 2
+text = "-"
+[node name="RecentLogTitle" type="Label" parent="Root/Layout/Middle/RightPanel/RightVBox"]
+text = "최근 로그"
+[node name="RecentLogList" type="VBoxContainer" parent="Root/Layout/Middle/RightPanel/RightVBox"]
+unique_name_in_owner = true
+theme_override_constants/separation = 4
+
+[node name="ActionBar" parent="Root/Layout" instance=ExtResource("4")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="TutorialOverlay" type="CanvasLayer" parent="."]
+unique_name_in_owner = true
+visible = false
+[node name="TutorialDim" type="ColorRect" parent="TutorialOverlay"]
+offset_right = 1920.0
+offset_bottom = 1080.0
+color = Color(0,0,0,0.54)
+[node name="TutorialPanel" type="PanelContainer" parent="TutorialOverlay"]
+offset_left = 560.0
+offset_top = 240.0
+offset_right = 1360.0
+offset_bottom = 760.0
+theme_override_styles/panel = SubResource("1")
+[node name="TutorialVBox" type="VBoxContainer" parent="TutorialOverlay/TutorialPanel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+[node name="TutorialTitle" type="Label" parent="TutorialOverlay/TutorialPanel/TutorialVBox"]
+unique_name_in_owner = true
+text = "튜토리얼"
+[node name="TutorialBody" type="Label" parent="TutorialOverlay/TutorialPanel/TutorialVBox"]
+unique_name_in_owner = true
+autowrap_mode = 2
+text = "내용"
+[node name="TutorialHint" type="Label" parent="TutorialOverlay/TutorialPanel/TutorialVBox"]
+unique_name_in_owner = true
+text = ""
+[node name="TutorialButtons" type="HBoxContainer" parent="TutorialOverlay/TutorialPanel/TutorialVBox"]
+alignment = 2
+[node name="TutorialSkipButton" type="Button" parent="TutorialOverlay/TutorialPanel/TutorialVBox/TutorialButtons"]
+unique_name_in_owner = true
+text = "건너뛰기"
+[node name="TutorialNextButton" type="Button" parent="TutorialOverlay/TutorialPanel/TutorialVBox/TutorialButtons"]
+unique_name_in_owner = true
+text = "다음"
+
+[node name="EventPopup" type="CanvasLayer" parent="."]
+unique_name_in_owner = true
+visible = false
+[node name="EventDim" type="ColorRect" parent="EventPopup"]
+offset_right = 1920.0
+offset_bottom = 1080.0
+color = Color(0,0,0,0.5)
+[node name="EventPanel" type="PanelContainer" parent="EventPopup"]
+offset_left = 640.0
+offset_top = 280.0
+offset_right = 1280.0
+offset_bottom = 660.0
+theme_override_styles/panel = SubResource("1")
+[node name="EventVBox" type="VBoxContainer" parent="EventPopup/EventPanel"]
+layout_mode = 2
+theme_override_constants/separation = 10
+[node name="EventTitle" type="Label" parent="EventPopup/EventPanel/EventVBox"]
+text = "운영 알림"
+[node name="EventMessage" type="Label" parent="EventPopup/EventPanel/EventVBox"]
+unique_name_in_owner = true
+autowrap_mode = 2
+text = "메시지"
+[node name="EventOkButton" type="Button" parent="EventPopup/EventPanel/EventVBox"]
+unique_name_in_owner = true
+text = "확인"
+
+[node name="ReportPopup" type="CanvasLayer" parent="."]
+unique_name_in_owner = true
+visible = false
+[node name="ReportDim" type="ColorRect" parent="ReportPopup"]
+offset_right = 1920.0
+offset_bottom = 1080.0
+color = Color(0,0,0,0.5)
+[node name="ReportPanel" type="PanelContainer" parent="ReportPopup"]
+offset_left = 560.0
+offset_top = 220.0
+offset_right = 1360.0
+offset_bottom = 760.0
+theme_override_styles/panel = SubResource("1")
+[node name="ReportVBox" type="VBoxContainer" parent="ReportPopup/ReportPanel"]
+layout_mode = 2
+theme_override_constants/separation = 10
+[node name="ReportTitle" type="Label" parent="ReportPopup/ReportPanel/ReportVBox"]
+text = "일일 운영 보고"
+[node name="ReportSummary" type="Label" parent="ReportPopup/ReportPanel/ReportVBox"]
+unique_name_in_owner = true
+autowrap_mode = 2
+text = "요약"
+[node name="ReportNextButton" type="Button" parent="ReportPopup/ReportPanel/ReportVBox"]
+unique_name_in_owner = true
+text = "다음 Day"
+
+[node name="GameOverPopup" type="CanvasLayer" parent="."]
+unique_name_in_owner = true
+visible = false
+[node name="GameOverDim" type="ColorRect" parent="GameOverPopup"]
+offset_right = 1920.0
+offset_bottom = 1080.0
+color = Color(0,0,0,0.62)
+[node name="GameOverPanel" type="PanelContainer" parent="GameOverPopup"]
+offset_left = 620.0
+offset_top = 280.0
+offset_right = 1300.0
+offset_bottom = 720.0
+theme_override_styles/panel = SubResource("1")
+[node name="GameOverVBox" type="VBoxContainer" parent="GameOverPopup/GameOverPanel"]
+layout_mode = 2
+theme_override_constants/separation = 10
+[node name="GameOverTitle" type="Label" parent="GameOverPopup/GameOverPanel/GameOverVBox"]
+text = "운영 실패"
+horizontal_alignment = 1
+[node name="GameOverReason" type="Label" parent="GameOverPopup/GameOverPanel/GameOverVBox"]
+unique_name_in_owner = true
+autowrap_mode = 2
+text = "사유"
+[node name="GameOverRetryButton" type="Button" parent="GameOverPopup/GameOverPanel/GameOverVBox"]
+unique_name_in_owner = true
+text = "같은 조건으로 재시작"
+[node name="GameOverTitleButton" type="Button" parent="GameOverPopup/GameOverPanel/GameOverVBox"]
+unique_name_in_owner = true
+text = "타이틀로 이동"

@@ -9,14 +9,14 @@
 config_version=5
 
 [application]
-config/name="Elevator Safety Tycoon v1.1.10"
-run/main_scene="res://scenes/TitleScreen.tscn"
+config/name="Elevator Safety Tycoon v1.2.0"
+run/main_scene="res://scenes/v120/TitleScreen.tscn"
 config/features=PackedStringArray("4.6")
 config/icon="res://icon.svg"
-config/description="Version 1.1.10"
+config/description="Version 1.2.0"
 
 [gui]
-theme/custom="res://themes/PixelTheme.tres"
+theme/custom="res://themes/v120/ModernTheme.tres"
 
 [display]
 window/size/viewport_width=1920

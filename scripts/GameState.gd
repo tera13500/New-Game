@@ -1,7 +1,7 @@
 extends Node
 class_name GameState
 
-const GAME_VERSION: String = "1.1.10"
+const GAME_VERSION: String = "1.2.0"
 const FLOOR_COUNT: int = 5
 const ELEVATOR_COUNT: int = 2
 const INSPECTION_INTERVAL_DAYS: int = 4
@@ -60,6 +60,7 @@ func get_status_color(status: String) -> Color:
 		"normal": return Color("#37D4A7")
 		"busy": return Color("#62C8FF")
 		"warning", "inspection_due": return Color("#F3C95C")
+		"inspecting": return Color("#73d2de")
 		"risk": return Color("#FF9B64")
 		"fault": return Color("#D7263D")
 		_: return Color("#7A8499")
@@ -98,6 +99,20 @@ func finish_day() -> Dictionary:
 		best_no_fault_streak = max(best_no_fault_streak, no_fault_streak)
 	else:
 		no_fault_streak = 0
+	var milestones: Array[String] = []
+	var milestone_reward: int = 0
+	if no_fault_streak >= 5 and no_fault_streak % 5 == 0:
+		milestones.append("무고장 %d일 연속" % no_fault_streak)
+		milestone_reward += 900
+	if money >= 150000:
+		milestones.append("예산 150,000+ 유지")
+		milestone_reward += 700
+	if complaints == 0:
+		milestones.append("민원 0건 유지")
+		milestone_reward += 600
+	if inspection_rate >= 90.0:
+		milestones.append("고점검 운영 달성")
+		milestone_reward += 500
 	var summary: Dictionary = {
 		"day": day,
 		"avg_waiting": avg_waiting,
@@ -112,7 +127,9 @@ func finish_day() -> Dictionary:
 		"goal_result": goal_result,
 		"streak": no_fault_streak,
 		"best_streak": best_no_fault_streak,
-		"game_over_warning": _game_over_warning()
+		"game_over_warning": _game_over_warning(),
+		"milestones": milestones,
+		"milestone_reward": milestone_reward
 	}
 
 	if bool(goal_result.get("success", false)):
@@ -128,6 +145,8 @@ func finish_day() -> Dictionary:
 		money += 300
 	if satisfaction >= 80.0:
 		money += 250
+	if milestone_reward > 0:
+		money += milestone_reward
 
 	day += 1
 	tick_in_day = 0
@@ -144,8 +163,8 @@ func perform_regular_inspection(elevator_index: int) -> void:
 	elevator.breakdown_risk = maxf(0.0, elevator.breakdown_risk - 18.0)
 	elevator.recover_component("brake_system", 8.0)
 	elevator.recover_component("controller", 6.0)
-	elevator.status = "inspection_due"
-	elevator.inspection_penalty_ticks = 1
+	elevator.status = "inspecting"
+	elevator.inspection_penalty_ticks = 2
 	inspection_rate = clampf(inspection_rate + 9.0, 0.0, 100.0)
 	safety_score = clampf(safety_score + 2.2, 0.0, 100.0)
 	satisfaction = clampf(satisfaction - 0.8, 0.0, 100.0)
@@ -156,12 +175,12 @@ func perform_preventive_maintenance(elevator_index: int) -> void:
 	if elevator == null or money < GameBalance.action_cost("preventive"):
 		return
 	money -= GameBalance.action_cost("preventive")
-	elevator.wear = maxf(0.0, elevator.wear - 22.0)
-	elevator.breakdown_risk = maxf(0.0, elevator.breakdown_risk - 12.0)
+	elevator.wear = maxf(0.0, elevator.wear - 25.0)
+	elevator.breakdown_risk = maxf(0.0, elevator.breakdown_risk - 15.0)
 	elevator.recover_component("door_operator", 10.0)
 	elevator.recover_component("guide_rail", 10.0)
 	elevator.recover_component("hoist_rope", 8.0)
-	safety_score = clampf(safety_score + 1.6, 0.0, 100.0)
+	safety_score = clampf(safety_score + 2.0, 0.0, 100.0)
 	emit_signal("state_changed")
 
 func perform_emergency_repair(elevator_index: int) -> void:
@@ -191,16 +210,16 @@ func _resolve_fault_for_elevator(elevator: ElevatorData, mode: String) -> void:
 			elevator.recover_component("brake_system", 15.0)
 			elevator.recover_component("governor", 12.0)
 			elevator.recover_component("emergency_call", 8.0)
-			satisfaction = clampf(satisfaction + 2.2, 0.0, 100.0)
+			satisfaction = clampf(satisfaction + 2.8, 0.0, 100.0)
 			complaints = max(0, complaints - 2)
 		"delay":
 			elevator.status = "warning"
 			elevator.breakdown_risk = clampf(elevator.breakdown_risk + 6.0, 0.0, 100.0)
 			complaints += 1
 		"outsource":
-			if money < 3800:
+			if money < GameBalance.action_cost("fault_outsource"):
 				return
-			money -= 3800
+			money -= GameBalance.action_cost("fault_outsource")
 			elevator.status = "warning"
 			elevator.wear = maxf(12.0, elevator.wear - 10.0)
 			elevator.breakdown_risk = maxf(0.0, elevator.breakdown_risk - 14.0)
@@ -318,7 +337,9 @@ func _move_elevators() -> void:
 			continue
 		if e.inspection_penalty_ticks > 0:
 			e.inspection_penalty_ticks -= 1
-			e.status = "inspection_due"
+			e.status = "inspecting"
+			if e.inspection_penalty_ticks <= 0:
+				e.status = "normal"
 			continue
 		var step: int = 2 if e.speed_factor > 1.08 and randf() < 0.45 else 1
 		if e.current_floor < e.target_floor:
@@ -384,6 +405,8 @@ func _update_global_scores() -> void:
 	inspection_rate = clampf(inspection_rate - 0.45, 0.0, 100.0)
 	if _count_inspection_due() > 0:
 		safety_score = clampf(safety_score - 0.55, 0.0, 100.0)
+	if _count_inspecting() > 0:
+		satisfaction = clampf(satisfaction - 0.35 * _count_inspecting(), 0.0, 100.0)
 	else:
 		safety_score = clampf(safety_score - 0.02, 0.0, 100.0)
 	if complaints > 12:
@@ -394,7 +417,9 @@ func _roll_daily_goal() -> void:
 		{"id":"fault_zero", "label":"오늘 fault 0건 유지", "reward":2200},
 		{"id":"complaints_low", "label":"민원 3건 이하 유지", "reward":1900},
 		{"id":"inspection_push", "label":"점검률 80 이상 달성", "reward":2000},
-		{"id":"wear_control", "label":"A호기 마모도 60 이하", "reward":2000}
+		{"id":"wear_control", "label":"A호기 마모도 60 이하", "reward":2000},
+		{"id":"budget_150k", "label":"예산 150,000 이상 유지", "reward":2400},
+		{"id":"complaint_zero_streak", "label":"민원 0 상태 유지", "reward":2300}
 	]
 	current_goal = goals[randi_range(0, goals.size() - 1)]
 
@@ -408,6 +433,8 @@ func _evaluate_goal() -> Dictionary:
 		"wear_control":
 			var a: ElevatorData = get_elevator_by_id(1)
 			success = a != null and a.wear <= 60.0
+		"budget_150k": success = money >= 150000
+		"complaint_zero_streak": success = complaints <= 0
 	return {"success": success, "reward": int(current_goal.get("reward", 0))}
 
 func _floors_by_demand_desc() -> Array[int]:
@@ -434,6 +461,13 @@ func _count_inspection_due() -> int:
 	var c: int = 0
 	for e: ElevatorData in elevators:
 		if day - e.last_inspection_day > INSPECTION_INTERVAL_DAYS:
+			c += 1
+	return c
+
+func _count_inspecting() -> int:
+	var c: int = 0
+	for e: ElevatorData in elevators:
+		if e.status == "inspecting" or e.inspection_penalty_ticks > 0:
 			c += 1
 	return c
 
@@ -474,10 +508,22 @@ func _daily_insight_text() -> String:
 
 
 func _game_over_warning() -> String:
-	if money <= 5000:
+	if money <= GameBalance.WARNING_MONEY:
 		return "경고: 예산이 매우 낮습니다."
-	if safety_score < 45.0:
+	if safety_score < GameBalance.WARNING_SAFETY:
 		return "경고: 안전 점수가 위험 구간입니다."
-	if complaints >= 18:
+	if complaints >= GameBalance.WARNING_COMPLAINTS:
 		return "경고: 민원이 폭주 중입니다."
 	return "안정 운영 중"
+
+func is_game_over() -> bool:
+	return money <= GameBalance.GAME_OVER_MONEY or safety_score <= GameBalance.GAME_OVER_SAFETY or complaints >= GameBalance.GAME_OVER_COMPLAINTS
+
+func game_over_reason() -> String:
+	if money <= GameBalance.GAME_OVER_MONEY:
+		return "예산이 소진되어 운영을 지속할 수 없습니다."
+	if safety_score <= GameBalance.GAME_OVER_SAFETY:
+		return "안전 점수가 임계치 아래로 하락했습니다."
+	if complaints >= GameBalance.GAME_OVER_COMPLAINTS:
+		return "민원이 통제 불가능한 수준으로 누적되었습니다."
+	return "운영 실패"

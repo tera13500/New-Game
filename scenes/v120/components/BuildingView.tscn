@@ -1,0 +1,188 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/v120/ui/BuildingViewV120.gd" id="1"]
+
+[sub_resource type="StyleBoxFlat" id="1"]
+bg_color = Color(0.0941176, 0.129412, 0.196078, 0.98)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.239216, 0.352941, 0.501961, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+content_margin_left = 12
+content_margin_top = 12
+content_margin_right = 12
+content_margin_bottom = 12
+
+[node name="BuildingView" type="PanelContainer"]
+script = ExtResource("1")
+custom_minimum_size = Vector2(0, 620)
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("1")
+
+[node name="HBox" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="DemandCol" type="VBoxContainer" parent="HBox"]
+custom_minimum_size = Vector2(220, 0)
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="DemandTitle" type="Label" parent="HBox/DemandCol"]
+text = "층별 대기 현황"
+
+[node name="R6" type="VBoxContainer" parent="HBox/DemandCol"]
+[node name="Demand6" type="Label" parent="HBox/DemandCol/R6"]
+unique_name_in_owner = true
+text = "6층"
+[node name="Crowd6" type="ColorRect" parent="HBox/DemandCol/R6"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(30, 8)
+[node name="R5" type="VBoxContainer" parent="HBox/DemandCol"]
+[node name="Demand5" type="Label" parent="HBox/DemandCol/R5"]
+unique_name_in_owner = true
+text = "5층"
+[node name="Crowd5" type="ColorRect" parent="HBox/DemandCol/R5"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(30, 8)
+[node name="R4" type="VBoxContainer" parent="HBox/DemandCol"]
+[node name="Demand4" type="Label" parent="HBox/DemandCol/R4"]
+unique_name_in_owner = true
+text = "4층"
+[node name="Crowd4" type="ColorRect" parent="HBox/DemandCol/R4"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(30, 8)
+[node name="R3" type="VBoxContainer" parent="HBox/DemandCol"]
+[node name="Demand3" type="Label" parent="HBox/DemandCol/R3"]
+unique_name_in_owner = true
+text = "3층"
+[node name="Crowd3" type="ColorRect" parent="HBox/DemandCol/R3"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(30, 8)
+[node name="R2" type="VBoxContainer" parent="HBox/DemandCol"]
+[node name="Demand2" type="Label" parent="HBox/DemandCol/R2"]
+unique_name_in_owner = true
+text = "2층"
+[node name="Crowd2" type="ColorRect" parent="HBox/DemandCol/R2"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(30, 8)
+[node name="R1" type="VBoxContainer" parent="HBox/DemandCol"]
+[node name="Demand1" type="Label" parent="HBox/DemandCol/R1"]
+unique_name_in_owner = true
+text = "1층"
+[node name="Crowd1" type="ColorRect" parent="HBox/DemandCol/R1"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(30, 8)
+
+[node name="Shaft" type="Control" parent="HBox"]
+custom_minimum_size = Vector2(470, 460)
+size_flags_horizontal = 3
+
+[node name="FrameA" type="ColorRect" parent="HBox/Shaft"]
+offset_left = 120.0
+offset_top = 24.0
+offset_right = 208.0
+offset_bottom = 450.0
+color = Color(0.156863, 0.243137, 0.364706, 1)
+[node name="CoreA" type="ColorRect" parent="HBox/Shaft"]
+offset_left = 124.0
+offset_top = 28.0
+offset_right = 204.0
+offset_bottom = 446.0
+color = Color(0.0823529, 0.121569, 0.188235, 1)
+[node name="FrameB" type="ColorRect" parent="HBox/Shaft"]
+offset_left = 238.0
+offset_top = 24.0
+offset_right = 326.0
+offset_bottom = 450.0
+color = Color(0.156863, 0.243137, 0.364706, 1)
+[node name="CoreB" type="ColorRect" parent="HBox/Shaft"]
+offset_left = 242.0
+offset_top = 28.0
+offset_right = 322.0
+offset_bottom = 446.0
+color = Color(0.0823529, 0.121569, 0.188235, 1)
+
+[node name="SelectA" type="ColorRect" parent="HBox/Shaft"]
+unique_name_in_owner = true
+offset_left = 118.0
+offset_top = 398.0
+offset_right = 210.0
+offset_bottom = 438.0
+color = Color(0.372549, 0.827451, 0.737255, 0.25)
+visible = false
+[node name="CarA" type="PanelContainer" parent="HBox/Shaft"]
+unique_name_in_owner = true
+offset_left = 130.0
+offset_top = 404.0
+offset_right = 198.0
+offset_bottom = 436.0
+[node name="DoorA" type="ColorRect" parent="HBox/Shaft/CarA"]
+unique_name_in_owner = true
+layout_mode = 2
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 18.0
+offset_right = -18.0
+offset_top = 3.0
+offset_bottom = -3.0
+[node name="SelectABtn" type="Button" parent="HBox/Shaft/CarA"]
+layout_mode = 2
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+flat = true
+[connection signal="pressed" from="HBox/Shaft/CarA/SelectABtn" to="." method="_on_select_a_pressed"]
+[node name="BadgeA" type="Label" parent="HBox/Shaft"]
+unique_name_in_owner = true
+offset_left = 204.0
+offset_top = 405.0
+offset_right = 330.0
+offset_bottom = 430.0
+text = "정상"
+
+[node name="SelectB" type="ColorRect" parent="HBox/Shaft"]
+unique_name_in_owner = true
+offset_left = 236.0
+offset_top = 398.0
+offset_right = 328.0
+offset_bottom = 438.0
+color = Color(0.372549, 0.827451, 0.737255, 0.25)
+visible = false
+[node name="CarB" type="PanelContainer" parent="HBox/Shaft"]
+unique_name_in_owner = true
+offset_left = 248.0
+offset_top = 404.0
+offset_right = 316.0
+offset_bottom = 436.0
+[node name="DoorB" type="ColorRect" parent="HBox/Shaft/CarB"]
+unique_name_in_owner = true
+layout_mode = 2
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 18.0
+offset_right = -18.0
+offset_top = 3.0
+offset_bottom = -3.0
+[node name="SelectBBtn" type="Button" parent="HBox/Shaft/CarB"]
+layout_mode = 2
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+flat = true
+[connection signal="pressed" from="HBox/Shaft/CarB/SelectBBtn" to="." method="_on_select_b_pressed"]
+[node name="BadgeB" type="Label" parent="HBox/Shaft"]
+unique_name_in_owner = true
+offset_left = 322.0
+offset_top = 405.0
+offset_right = 450.0
+offset_bottom = 430.0
+text = "정상"

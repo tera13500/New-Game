@@ -12,24 +12,24 @@
 [ext_resource type="PackedScene" path="res://scenes/components/ComponentCodexPopup.tscn" id="10_codex"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
-bg_color = Color(0.09, 0.13, 0.2, 0.98)
+bg_color = Color(0.0941176, 0.129412, 0.196078, 0.98)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.27, 0.45, 0.65, 1)
+border_color = Color(0.239216, 0.352941, 0.501961, 1)
 content_margin_left = 10
 content_margin_top = 8
 content_margin_right = 10
 content_margin_bottom = 8
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
-bg_color = Color(0.07, 0.1, 0.16, 0.99)
+bg_color = Color(0.0941176, 0.129412, 0.196078, 0.99)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.24, 0.38, 0.53, 1)
+border_color = Color(0.239216, 0.352941, 0.501961, 1)
 content_margin_left = 12
 content_margin_top = 12
 content_margin_right = 12
@@ -59,7 +59,7 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0.045, 0.06, 0.095, 1)
+color = Color(0.058824, 0.0784314, 0.12549, 1)
 
 [node name="Root" type="MarginContainer" parent="."]
 layout_mode = 1
@@ -96,6 +96,7 @@ text = "예산"
 unique_name_in_owner = true
 layout_mode = 2
 text = "0"
+theme_type_variation = &"CardValueLabel"
 theme_override_font_sizes/font_size = 24
 [node name="SafetyCard" type="PanelContainer" parent="Root/Layout/TopBar/TopRow"]
 layout_mode = 2
@@ -110,6 +111,7 @@ text = "안전"
 unique_name_in_owner = true
 layout_mode = 2
 text = "0"
+theme_type_variation = &"CardValueLabel"
 theme_override_font_sizes/font_size = 24
 [node name="SatisfactionCard" type="PanelContainer" parent="Root/Layout/TopBar/TopRow"]
 layout_mode = 2
@@ -124,6 +126,7 @@ text = "만족"
 unique_name_in_owner = true
 layout_mode = 2
 text = "0"
+theme_type_variation = &"CardValueLabel"
 theme_override_font_sizes/font_size = 24
 [node name="InspectionCard" type="PanelContainer" parent="Root/Layout/TopBar/TopRow"]
 layout_mode = 2
@@ -138,6 +141,7 @@ text = "점검률"
 unique_name_in_owner = true
 layout_mode = 2
 text = "0"
+theme_type_variation = &"CardValueLabel"
 theme_override_font_sizes/font_size = 24
 [node name="ComplaintCard" type="PanelContainer" parent="Root/Layout/TopBar/TopRow"]
 layout_mode = 2
@@ -152,6 +156,7 @@ text = "민원"
 unique_name_in_owner = true
 layout_mode = 2
 text = "0"
+theme_type_variation = &"CardValueLabel"
 theme_override_font_sizes/font_size = 24
 [node name="TimeCard" type="PanelContainer" parent="Root/Layout/TopBar/TopRow"]
 layout_mode = 2
@@ -169,8 +174,28 @@ text = "Day 1 / Tick 0"
 [node name="VersionLabel" type="Label" parent="Root/Layout/TopBar/TopRow/TimeCard/TimeVBox"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "v1.1.10"
-modulate = Color(0.62, 0.82, 1, 1)
+text = "v1.2.0"
+modulate = Color(0.4, 0.75, 0.95, 1)
+
+[node name="SpeedControl" type="HBoxContainer" parent="Root/Layout"]
+layout_mode = 2
+alignment = 2
+theme_override_constants/separation = 6
+[node name="SpeedLabel" type="Label" parent="Root/Layout/SpeedControl"]
+layout_mode = 2
+text = "속도"
+[node name="Speed1x" type="Button" parent="Root/Layout/SpeedControl"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "1x"
+[node name="Speed2x" type="Button" parent="Root/Layout/SpeedControl"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "2x"
+[node name="Speed3x" type="Button" parent="Root/Layout/SpeedControl"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "3x"
 
 [node name="MainRow" type="HBoxContainer" parent="Root/Layout"]
 layout_mode = 2
@@ -302,24 +327,24 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0, 0, 0, 0.72)
+color = Color(0, 0, 0, 0)
 
 
 [node name="DimTop" type="ColorRect" parent="TutorialOverlay"]
 unique_name_in_owner = true
-color = Color(0, 0, 0, 0.62)
+color = Color(0, 0, 0, 0.52)
 
 [node name="DimLeft" type="ColorRect" parent="TutorialOverlay"]
 unique_name_in_owner = true
-color = Color(0, 0, 0, 0.62)
+color = Color(0, 0, 0, 0.52)
 
 [node name="DimRight" type="ColorRect" parent="TutorialOverlay"]
 unique_name_in_owner = true
-color = Color(0, 0, 0, 0.62)
+color = Color(0, 0, 0, 0.52)
 
 [node name="DimBottom" type="ColorRect" parent="TutorialOverlay"]
 unique_name_in_owner = true
-color = Color(0, 0, 0, 0.62)
+color = Color(0, 0, 0, 0.52)
 
 [node name="TutorialFocusFrame" type="PanelContainer" parent="TutorialOverlay"]
 unique_name_in_owner = true
@@ -376,3 +401,39 @@ text = "건너뛰기"
 unique_name_in_owner = true
 layout_mode = 2
 text = "다음"
+
+
+[node name="GameOverLayer" type="CanvasLayer" parent="."]
+unique_name_in_owner = true
+visible = false
+
+[node name="GameOverDim" type="ColorRect" parent="GameOverLayer"]
+offset_right = 1920.0
+offset_bottom = 1080.0
+color = Color(0, 0, 0, 0.52)
+
+[node name="GameOverPanel" type="PanelContainer" parent="GameOverLayer"]
+offset_left = 620.0
+offset_top = 300.0
+offset_right = 1300.0
+offset_bottom = 700.0
+
+[node name="GameOverVBox" type="VBoxContainer" parent="GameOverLayer/GameOverPanel"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="GameOverTitle" type="Label" parent="GameOverLayer/GameOverPanel/GameOverVBox"]
+layout_mode = 2
+text = "GAME OVER"
+horizontal_alignment = 1
+
+[node name="GameOverReason" type="Label" parent="GameOverLayer/GameOverPanel/GameOverVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 2
+text = "운영 실패"
+
+[node name="GameOverToTitleButton" type="Button" parent="GameOverLayer/GameOverPanel/GameOverVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "타이틀로"
