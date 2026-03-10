@@ -1,0 +1,251 @@
+[gd_scene load_steps=3 format=3 uid="uid://dpxxjlwm0kbd3"]
+
+[ext_resource type="Script" path="res://scripts/ui/BuildingView.gd" id="1_jtxjd"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.07, 0.1, 0.16, 0.98)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.27, 0.45, 0.65, 1)
+content_margin_left = 12
+content_margin_top = 12
+content_margin_right = 12
+content_margin_bottom = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cab"]
+bg_color = Color(0.23, 0.82, 0.62, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.84, 0.95, 1, 1)
+
+[node name="BuildingView" type="PanelContainer"]
+custom_minimum_size = Vector2(0, 520)
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_jtxjd")
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="HBox" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="FloorColumn" type="VBoxContainer" parent="HBox"]
+custom_minimum_size = Vector2(220, 0)
+layout_mode = 2
+theme_override_constants/separation = 10
+[node name="Title" type="Label" parent="HBox/FloorColumn"]
+text = "층별 대기 현황"
+[node name="Row5" type="VBoxContainer" parent="HBox/FloorColumn"]
+[node name="Demand5" type="Label" parent="HBox/FloorColumn/Row5"]
+unique_name_in_owner = true
+text = "5층 대기 0"
+[node name="Bar5" type="ColorRect" parent="HBox/FloorColumn/Row5"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(20, 8)
+color = Color(0.33, 0.78, 1, 1)
+[node name="Dot5" type="Label" parent="HBox/FloorColumn/Row5"]
+unique_name_in_owner = true
+text = "■□□"
+[node name="Row4" type="VBoxContainer" parent="HBox/FloorColumn"]
+[node name="Demand4" type="Label" parent="HBox/FloorColumn/Row4"]
+unique_name_in_owner = true
+text = "4층 대기 0"
+[node name="Bar4" type="ColorRect" parent="HBox/FloorColumn/Row4"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(20, 8)
+color = Color(0.33, 0.78, 1, 1)
+[node name="Dot4" type="Label" parent="HBox/FloorColumn/Row4"]
+unique_name_in_owner = true
+text = "■□□"
+[node name="Row3" type="VBoxContainer" parent="HBox/FloorColumn"]
+[node name="Demand3" type="Label" parent="HBox/FloorColumn/Row3"]
+unique_name_in_owner = true
+text = "3층 대기 0"
+[node name="Bar3" type="ColorRect" parent="HBox/FloorColumn/Row3"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(20, 8)
+color = Color(0.33, 0.78, 1, 1)
+[node name="Dot3" type="Label" parent="HBox/FloorColumn/Row3"]
+unique_name_in_owner = true
+text = "■□□"
+[node name="Row2" type="VBoxContainer" parent="HBox/FloorColumn"]
+[node name="Demand2" type="Label" parent="HBox/FloorColumn/Row2"]
+unique_name_in_owner = true
+text = "2층 대기 0"
+[node name="Bar2" type="ColorRect" parent="HBox/FloorColumn/Row2"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(20, 8)
+color = Color(0.33, 0.78, 1, 1)
+[node name="Dot2" type="Label" parent="HBox/FloorColumn/Row2"]
+unique_name_in_owner = true
+text = "■□□"
+[node name="Row1" type="VBoxContainer" parent="HBox/FloorColumn"]
+[node name="Demand1" type="Label" parent="HBox/FloorColumn/Row1"]
+unique_name_in_owner = true
+text = "1층 대기 0"
+[node name="Bar1" type="ColorRect" parent="HBox/FloorColumn/Row1"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(20, 8)
+color = Color(0.33, 0.78, 1, 1)
+[node name="Dot1" type="Label" parent="HBox/FloorColumn/Row1"]
+unique_name_in_owner = true
+text = "■□□"
+
+[node name="ShaftArea" type="Control" parent="HBox"]
+custom_minimum_size = Vector2(400, 470)
+size_flags_horizontal = 3
+
+[node name="ShaftFrameA" type="ColorRect" parent="HBox/ShaftArea"]
+offset_left = 118.0
+offset_top = 14.0
+offset_right = 198.0
+offset_bottom = 454.0
+color = Color(0.19, 0.29, 0.41, 1)
+[node name="ShaftA" type="ColorRect" parent="HBox/ShaftArea"]
+offset_left = 122.0
+offset_top = 18.0
+offset_right = 194.0
+offset_bottom = 450.0
+color = Color(0.11, 0.16, 0.24, 1)
+[node name="ShaftFrameB" type="ColorRect" parent="HBox/ShaftArea"]
+offset_left = 218.0
+offset_top = 14.0
+offset_right = 298.0
+offset_bottom = 454.0
+color = Color(0.19, 0.29, 0.41, 1)
+[node name="ShaftB" type="ColorRect" parent="HBox/ShaftArea"]
+offset_left = 222.0
+offset_top = 18.0
+offset_right = 294.0
+offset_bottom = 450.0
+color = Color(0.11, 0.16, 0.24, 1)
+
+[node name="FloorLine5" type="ColorRect" parent="HBox/ShaftArea"]
+offset_left = 90.0
+offset_top = 30.0
+offset_right = 330.0
+offset_bottom = 32.0
+color = Color(0.33, 0.48, 0.65, 0.8)
+[node name="FloorLine4" type="ColorRect" parent="HBox/ShaftArea"]
+offset_left = 90.0
+offset_top = 122.0
+offset_right = 330.0
+offset_bottom = 124.0
+color = Color(0.33, 0.48, 0.65, 0.8)
+[node name="FloorLine3" type="ColorRect" parent="HBox/ShaftArea"]
+offset_left = 90.0
+offset_top = 214.0
+offset_right = 330.0
+offset_bottom = 216.0
+color = Color(0.33, 0.48, 0.65, 0.8)
+[node name="FloorLine2" type="ColorRect" parent="HBox/ShaftArea"]
+offset_left = 90.0
+offset_top = 306.0
+offset_right = 330.0
+offset_bottom = 308.0
+color = Color(0.33, 0.48, 0.65, 0.8)
+[node name="FloorLine1" type="ColorRect" parent="HBox/ShaftArea"]
+offset_left = 90.0
+offset_top = 398.0
+offset_right = 330.0
+offset_bottom = 400.0
+color = Color(0.33, 0.48, 0.65, 0.8)
+
+[node name="CabA" type="PanelContainer" parent="HBox/ShaftArea"]
+unique_name_in_owner = true
+offset_left = 129.0
+offset_top = 404.0
+offset_right = 185.0
+offset_bottom = 434.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_cab")
+[node name="DoorA" type="ColorRect" parent="HBox/ShaftArea/CabA"]
+unique_name_in_owner = true
+layout_mode = 2
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 2.0
+offset_right = -16.0
+offset_bottom = -2.0
+color = Color(0.92, 0.98, 1, 0.6)
+[node name="CabALabel" type="Label" parent="HBox/ShaftArea/CabA"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "A"
+horizontal_alignment = 1
+vertical_alignment = 1
+[node name="MarkerA" type="Label" parent="HBox/ShaftArea"]
+unique_name_in_owner = true
+offset_left = 190.0
+offset_top = 405.0
+offset_right = 220.0
+offset_bottom = 430.0
+text = "OK"
+
+[node name="CabB" type="PanelContainer" parent="HBox/ShaftArea"]
+unique_name_in_owner = true
+offset_left = 229.0
+offset_top = 404.0
+offset_right = 285.0
+offset_bottom = 434.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_cab")
+[node name="DoorB" type="ColorRect" parent="HBox/ShaftArea/CabB"]
+unique_name_in_owner = true
+layout_mode = 2
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 2.0
+offset_right = -16.0
+offset_bottom = -2.0
+color = Color(0.92, 0.98, 1, 0.6)
+[node name="CabBLabel" type="Label" parent="HBox/ShaftArea/CabB"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "B"
+horizontal_alignment = 1
+vertical_alignment = 1
+[node name="MarkerB" type="Label" parent="HBox/ShaftArea"]
+unique_name_in_owner = true
+offset_left = 290.0
+offset_top = 405.0
+offset_right = 320.0
+offset_bottom = 430.0
+text = "OK"
+
+[node name="FloorGuide5" type="Label" parent="HBox/ShaftArea"]
+offset_left = 28.0
+offset_top = 26.0
+offset_right = 88.0
+offset_bottom = 50.0
+text = "5층"
+[node name="FloorGuide4" type="Label" parent="HBox/ShaftArea"]
+offset_left = 28.0
+offset_top = 118.0
+offset_right = 88.0
+offset_bottom = 142.0
+text = "4층"
+[node name="FloorGuide3" type="Label" parent="HBox/ShaftArea"]
+offset_left = 28.0
+offset_top = 210.0
+offset_right = 88.0
+offset_bottom = 234.0
+text = "3층"
+[node name="FloorGuide2" type="Label" parent="HBox/ShaftArea"]
+offset_left = 28.0
+offset_top = 302.0
+offset_right = 88.0
+offset_bottom = 326.0
+text = "2층"
+[node name="FloorGuide1" type="Label" parent="HBox/ShaftArea"]
+offset_left = 28.0
+offset_top = 394.0
+offset_right = 88.0
+offset_bottom = 418.0
+text = "1층"
