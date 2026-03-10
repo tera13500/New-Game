@@ -155,6 +155,16 @@ offset_right = 330.0
 offset_bottom = 400.0
 color = Color(0.33, 0.48, 0.65, 0.8)
 
+
+[node name="SelectFrameA" type="ColorRect" parent="HBox/ShaftArea"]
+unique_name_in_owner = true
+offset_left = 125.0
+offset_top = 400.0
+offset_right = 189.0
+offset_bottom = 438.0
+color = Color(0.96, 0.88, 0.45, 0.45)
+visible = false
+
 [node name="CabA" type="PanelContainer" parent="HBox/ShaftArea"]
 unique_name_in_owner = true
 offset_left = 129.0
@@ -186,6 +196,16 @@ offset_top = 405.0
 offset_right = 220.0
 offset_bottom = 430.0
 text = "OK"
+
+
+[node name="SelectFrameB" type="ColorRect" parent="HBox/ShaftArea"]
+unique_name_in_owner = true
+offset_left = 225.0
+offset_top = 400.0
+offset_right = 289.0
+offset_bottom = 438.0
+color = Color(0.96, 0.88, 0.45, 0.45)
+visible = false
 
 [node name="CabB" type="PanelContainer" parent="HBox/ShaftArea"]
 unique_name_in_owner = true

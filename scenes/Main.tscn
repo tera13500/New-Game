@@ -169,8 +169,28 @@ text = "Day 1 / Tick 0"
 [node name="VersionLabel" type="Label" parent="Root/Layout/TopBar/TopRow/TimeCard/TimeVBox"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "v1.1.10"
+text = "v1.1.11"
 modulate = Color(0.62, 0.82, 1, 1)
+
+[node name="SpeedControl" type="HBoxContainer" parent="Root/Layout"]
+layout_mode = 2
+alignment = 2
+theme_override_constants/separation = 6
+[node name="SpeedLabel" type="Label" parent="Root/Layout/SpeedControl"]
+layout_mode = 2
+text = "속도"
+[node name="Speed1x" type="Button" parent="Root/Layout/SpeedControl"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "1x"
+[node name="Speed2x" type="Button" parent="Root/Layout/SpeedControl"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "2x"
+[node name="Speed3x" type="Button" parent="Root/Layout/SpeedControl"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "3x"
 
 [node name="MainRow" type="HBoxContainer" parent="Root/Layout"]
 layout_mode = 2
@@ -302,7 +322,7 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0, 0, 0, 0.72)
+color = Color(0, 0, 0, 0)
 
 
 [node name="DimTop" type="ColorRect" parent="TutorialOverlay"]
@@ -376,3 +396,39 @@ text = "건너뛰기"
 unique_name_in_owner = true
 layout_mode = 2
 text = "다음"
+
+
+[node name="GameOverLayer" type="CanvasLayer" parent="."]
+unique_name_in_owner = true
+visible = false
+
+[node name="GameOverDim" type="ColorRect" parent="GameOverLayer"]
+offset_right = 1920.0
+offset_bottom = 1080.0
+color = Color(0, 0, 0, 0.62)
+
+[node name="GameOverPanel" type="PanelContainer" parent="GameOverLayer"]
+offset_left = 620.0
+offset_top = 300.0
+offset_right = 1300.0
+offset_bottom = 700.0
+
+[node name="GameOverVBox" type="VBoxContainer" parent="GameOverLayer/GameOverPanel"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="GameOverTitle" type="Label" parent="GameOverLayer/GameOverPanel/GameOverVBox"]
+layout_mode = 2
+text = "GAME OVER"
+horizontal_alignment = 1
+
+[node name="GameOverReason" type="Label" parent="GameOverLayer/GameOverPanel/GameOverVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 2
+text = "운영 실패"
+
+[node name="GameOverToTitleButton" type="Button" parent="GameOverLayer/GameOverPanel/GameOverVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "타이틀로"

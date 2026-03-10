@@ -5,7 +5,8 @@ const ACTION_COSTS: Dictionary = {
 	"inspection": 1200,
 	"preventive": 2400,
 	"emergency": 5200,
-	"campaign": 800
+	"campaign": 800,
+	"fault_outsource": 3800
 }
 
 const UPGRADE_COSTS: Dictionary = {
@@ -22,6 +23,12 @@ const EVENT_COOLDOWN_TICKS: int = 3
 const MAX_RECENT_LOGS: int = 5
 const MAX_RECENT_EVENT_MEMORY: int = 6
 const FAULT_RISK_THRESHOLD: float = 88.0
+const GAME_OVER_MONEY: int = 0
+const GAME_OVER_SAFETY: float = 30.0
+const GAME_OVER_COMPLAINTS: int = 24
+const WARNING_SAFETY: float = 42.0
+const WARNING_COMPLAINTS: int = 16
+const WARNING_MONEY: int = 5000
 
 static func action_cost(action_id: String) -> int:
 	return int(ACTION_COSTS.get(action_id, 0))

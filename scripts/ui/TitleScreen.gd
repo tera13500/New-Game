@@ -4,6 +4,7 @@ extends Control
 @onready var helper_label: Label = %HelperLabel
 
 func _ready() -> void:
+	AppState.try_apply_pixel_font(get_theme())
 	version_label.text = "v%s" % GameState.GAME_VERSION
 	helper_label.text = "처음 플레이라면 튜토리얼 시작을 권장합니다." if AppState.first_run else "모드를 선택해 운영을 시작하세요."
 

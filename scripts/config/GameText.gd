@@ -9,5 +9,18 @@ const TUTORIAL_PAGES: Array[Dictionary] = [
 	{"title":"실습: 정기점검", "body":"하단 [정기점검] 버튼을 1회 눌러보세요.", "focus":"actions", "requires_action":"inspection"},
 	{"title":"실습: 엘리베이터 선택", "body":"우측의 호기 선택에서 다른 호기를 눌러보세요.", "focus":"right", "requires_action":"select_elevator"},
 	{"title":"최근 로그", "body":"Minor/Info 이벤트는 로그에서 추적합니다.", "focus":"logs"},
+	{"title":"속도 조절", "body":"상단 속도 버튼(1x/2x/3x)으로 운영 템포를 조절할 수 있습니다.", "focus":"top"},
 	{"title":"시작 준비 완료", "body":"이제 운영을 시작합니다. 작은 경고를 먼저 잡는 것이 핵심입니다.", "focus":"building"}
 ]
+
+
+static func format_number(value: int) -> String:
+	var text_value: String = str(value)
+	var out: String = ""
+	var count: int = 0
+	for i: int in range(text_value.length() - 1, -1, -1):
+		out = text_value[i] + out
+		count += 1
+		if count % 3 == 0 and i > 0:
+			out = "," + out
+	return out
