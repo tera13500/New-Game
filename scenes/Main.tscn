@@ -12,32 +12,32 @@
 [ext_resource type="PackedScene" path="res://scenes/components/ComponentCodexPopup.tscn" id="10_codex"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
-bg_color = Color(0.10, 0.13, 0.20, 0.96)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.26, 0.33, 0.46, 0.92)
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
+bg_color = Color(0.09, 0.13, 0.2, 0.98)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.27, 0.45, 0.65, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
 content_margin_left = 10
 content_margin_top = 8
 content_margin_right = 10
 content_margin_bottom = 8
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
-bg_color = Color(0.082, 0.106, 0.158, 0.97)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.24, 0.31, 0.44, 0.9)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
+bg_color = Color(0.07, 0.1, 0.16, 0.99)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.24, 0.38, 0.53, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
 content_margin_left = 12
 content_margin_top = 12
 content_margin_right = 12
@@ -69,21 +69,21 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0.055, 0.073, 0.11, 1)
+color = Color(0.045, 0.06, 0.095, 1)
 
 [node name="Root" type="MarginContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme_override_constants/margin_left = 22
-theme_override_constants/margin_top = 18
-theme_override_constants/margin_right = 22
-theme_override_constants/margin_bottom = 18
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 16
 
 [node name="Layout" type="VBoxContainer" parent="Root"]
 layout_mode = 2
-theme_override_constants/separation = 14
+theme_override_constants/separation = 12
 
 [node name="TopBar" type="PanelContainer" parent="Root/Layout"]
 layout_mode = 2
@@ -91,7 +91,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
 [node name="TopRow" type="HBoxContainer" parent="Root/Layout/TopBar"]
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 8
 
 [node name="MoneyCard" type="PanelContainer" parent="Root/Layout/TopBar/TopRow"]
 layout_mode = 2
@@ -115,7 +115,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_card")
 layout_mode = 2
 [node name="SafetyLabel" type="Label" parent="Root/Layout/TopBar/TopRow/SafetyCard/SafetyVBox"]
 layout_mode = 2
-text = "안전점수"
+text = "안전"
 [node name="SafetyValue" type="Label" parent="Root/Layout/TopBar/TopRow/SafetyCard/SafetyVBox"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -129,7 +129,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_card")
 layout_mode = 2
 [node name="SatisfactionLabel" type="Label" parent="Root/Layout/TopBar/TopRow/SatisfactionCard/SatisfactionVBox"]
 layout_mode = 2
-text = "만족도"
+text = "만족"
 [node name="SatisfactionValue" type="Label" parent="Root/Layout/TopBar/TopRow/SatisfactionCard/SatisfactionVBox"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -176,17 +176,16 @@ text = "진행"
 unique_name_in_owner = true
 layout_mode = 2
 text = "Day 1 / Tick 0"
-
 [node name="VersionLabel" type="Label" parent="Root/Layout/TopBar/TopRow/TimeCard/TimeVBox"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "v1.1.8"
-modulate = Color(0.72, 0.78, 0.9, 1)
+modulate = Color(0.62, 0.82, 1, 1)
 
 [node name="MainRow" type="HBoxContainer" parent="Root/Layout"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/separation = 14
+theme_override_constants/separation = 12
 
 [node name="BuildingView" parent="Root/Layout/MainRow" instance=ExtResource("5_building")]
 unique_name_in_owner = true
@@ -195,18 +194,18 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="RightPanel" type="PanelContainer" parent="Root/Layout/MainRow"]
-custom_minimum_size = Vector2(390, 0)
+custom_minimum_size = Vector2(420, 0)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
 [node name="RightVBox" type="VBoxContainer" parent="Root/Layout/MainRow/RightPanel"]
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 6
 
 [node name="PanelTitle" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox"]
 layout_mode = 2
-text = "엘리베이터 상세"
+text = "현재 상태"
 [node name="ElevatorSelector" type="OptionButton" parent="Root/Layout/MainRow/RightPanel/RightVBox"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -218,7 +217,7 @@ text = "정상"
 unique_name_in_owner = true
 layout_mode = 2
 autowrap_mode = 2
-text = "현재 운행 상태"
+text = "운행 요약"
 
 [node name="Grid" type="GridContainer" parent="Root/Layout/MainRow/RightPanel/RightVBox"]
 layout_mode = 2
@@ -256,17 +255,17 @@ text = "0일"
 unique_name_in_owner = true
 layout_mode = 2
 autowrap_mode = 2
-text = "핵심 장치 상태"
+text = "핵심 장치"
 [node name="CampaignSummary" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox"]
 unique_name_in_owner = true
 layout_mode = 2
 autowrap_mode = 2
-text = "활성 캠페인"
+text = "캠페인"
 [node name="UpgradesValue" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox"]
 unique_name_in_owner = true
 layout_mode = 2
 autowrap_mode = 2
-text = "업그레이드 없음"
+text = "업그레이드"
 [node name="RecommendLabel" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -297,21 +296,28 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0, 0, 0, 0.68)
+color = Color(0, 0, 0, 0.7)
 
 [node name="TutorialPanel" type="PanelContainer" parent="TutorialOverlay"]
-offset_left = 390.0
+offset_left = 450.0
 offset_top = 220.0
-offset_right = 1210.0
-offset_bottom = 690.0
+offset_right = 1470.0
+offset_bottom = 760.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
 [node name="TutorialVBox" type="VBoxContainer" parent="TutorialOverlay/TutorialPanel"]
 layout_mode = 2
 theme_override_constants/separation = 10
 
 [node name="TutorialTitle" type="Label" parent="TutorialOverlay/TutorialPanel/TutorialVBox"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "튜토리얼"
+
+[node name="TutorialStepLabel" type="Label" parent="TutorialOverlay/TutorialPanel/TutorialVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "1 / 8"
 
 [node name="TutorialText" type="Label" parent="TutorialOverlay/TutorialPanel/TutorialVBox"]
 unique_name_in_owner = true
@@ -322,7 +328,7 @@ text = "튜토리얼 내용"
 [node name="TutorialButtons" type="HBoxContainer" parent="TutorialOverlay/TutorialPanel/TutorialVBox"]
 layout_mode = 2
 alignment = 1
-theme_override_constants/separation = 8
+theme_override_constants/separation = 10
 
 [node name="TutorialSkipButton" type="Button" parent="TutorialOverlay/TutorialPanel/TutorialVBox/TutorialButtons"]
 unique_name_in_owner = true

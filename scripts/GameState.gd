@@ -55,10 +55,10 @@ func seed_dummy_data() -> void:
 
 func get_status_color(status: String) -> Color:
 	match status:
-		"normal": return Color("#2BD67B")
-		"busy": return Color("#48B4FF")
-		"warning", "inspection_due": return Color("#F7B538")
-		"risk": return Color("#FF8A4C")
+		"normal": return Color("#37D4A7")
+		"busy": return Color("#62C8FF")
+		"warning", "inspection_due": return Color("#F3C95C")
+		"risk": return Color("#FF9B64")
 		"fault": return Color("#D7263D")
 		_: return Color("#7A8499")
 

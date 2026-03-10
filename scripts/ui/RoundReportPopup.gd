@@ -12,23 +12,22 @@ func _ready() -> void:
 
 func show_report(summary: Dictionary, game_state: GameState) -> void:
 	%ReportTitle.text = "Day %d 운영 리포트" % int(summary.get("day", 0))
-	%Metrics.text = "평균 대기: %.1f | 고장: %d | 점검 지연: %d" % [
+	%Metrics.text = "평균 대기 %.1f | 고장 %d | 점검 지연 %d" % [
 		float(summary.get("avg_waiting", 0.0)),
 		int(summary.get("fault_count", 0)),
 		int(summary.get("inspection_overdue", 0))
 	]
 	var goal_result: Dictionary = summary.get("goal_result", {"success": false, "reward": 0})
-	var goal_line: String = "라운드 목표: %s (%s)" % [
+	var goal_line: String = "오늘 목표: %s (%s)" % [
 		summary.get("goal_text", "-"),
 		"성공 +%d원" % int(goal_result.get("reward", 0)) if bool(goal_result.get("success", false)) else "실패"
 	]
-	%Commentary.text = "%s\n예방성과: %s\n핵심 장치: %s\n놓친 신호: %s\n추천 액션: %s\n안전 인사이트: %s" % [
+	%Commentary.text = "%s\n- 예방 성과: %s\n- 핵심 장치: %s\n- 놓친 신호: %s\n- 다음 권장 액션: %s" % [
 		goal_line,
 		summary.get("best_prevention", "-"),
 		summary.get("critical_component", "-"),
 		summary.get("missed_signal", "-"),
-		summary.get("recommendation", "-"),
-		summary.get("insight", "-")
+		summary.get("recommendation", "-")
 	]
 	%Footer.text = "예산 %s원 | 안전 %.1f | 만족 %.1f | 민원 %d" % [_format_number(game_state.money), game_state.safety_score, game_state.satisfaction, game_state.complaints]
 	visible = true

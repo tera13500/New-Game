@@ -3,32 +3,32 @@
 [ext_resource type="Script" path="res://scripts/ui/BuildingView.gd" id="1_jtxjd"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
-bg_color = Color(0.074, 0.098, 0.148, 0.96)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.25, 0.33, 0.48, 0.9)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
-content_margin_left = 14
-content_margin_top = 14
-content_margin_right = 14
-content_margin_bottom = 14
+bg_color = Color(0.07, 0.1, 0.16, 0.98)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.27, 0.45, 0.65, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+content_margin_left = 12
+content_margin_top = 12
+content_margin_right = 12
+content_margin_bottom = 12
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cab"]
-bg_color = Color(0.19, 0.76, 0.48, 0.95)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.86, 0.93, 1.0, 0.55)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
+bg_color = Color(0.23, 0.82, 0.62, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.78, 0.95, 1, 1)
+corner_radius_top_left = 1
+corner_radius_top_right = 1
+corner_radius_bottom_right = 1
+corner_radius_bottom_left = 1
 
 [node name="BuildingView" type="PanelContainer"]
 custom_minimum_size = Vector2(0, 520)
@@ -39,12 +39,12 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
 [node name="HBox" type="HBoxContainer" parent="."]
 layout_mode = 2
-theme_override_constants/separation = 14
+theme_override_constants/separation = 16
 
 [node name="FloorColumn" type="VBoxContainer" parent="HBox"]
-custom_minimum_size = Vector2(190, 0)
+custom_minimum_size = Vector2(210, 0)
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 10
 
 [node name="Title" type="Label" parent="HBox/FloorColumn"]
 layout_mode = 2
@@ -55,86 +55,106 @@ layout_mode = 2
 [node name="Demand5" type="Label" parent="HBox/FloorColumn/Row5"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "5F"
+text = "5층 대기 0"
 [node name="Bar5" type="ColorRect" parent="HBox/FloorColumn/Row5"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(20, 7)
+custom_minimum_size = Vector2(20, 8)
 layout_mode = 2
-color = Color(0.31, 0.63, 1, 1)
+color = Color(0.33, 0.78, 1, 1)
+[node name="Dot5" type="Label" parent="HBox/FloorColumn/Row5"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "■□□"
 
 [node name="Row4" type="VBoxContainer" parent="HBox/FloorColumn"]
 layout_mode = 2
 [node name="Demand4" type="Label" parent="HBox/FloorColumn/Row4"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "4F"
+text = "4층 대기 0"
 [node name="Bar4" type="ColorRect" parent="HBox/FloorColumn/Row4"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(20, 7)
+custom_minimum_size = Vector2(20, 8)
 layout_mode = 2
-color = Color(0.31, 0.63, 1, 1)
+color = Color(0.33, 0.78, 1, 1)
+[node name="Dot4" type="Label" parent="HBox/FloorColumn/Row4"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "■□□"
 
 [node name="Row3" type="VBoxContainer" parent="HBox/FloorColumn"]
 layout_mode = 2
 [node name="Demand3" type="Label" parent="HBox/FloorColumn/Row3"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "3F"
+text = "3층 대기 0"
 [node name="Bar3" type="ColorRect" parent="HBox/FloorColumn/Row3"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(20, 7)
+custom_minimum_size = Vector2(20, 8)
 layout_mode = 2
-color = Color(0.31, 0.63, 1, 1)
+color = Color(0.33, 0.78, 1, 1)
+[node name="Dot3" type="Label" parent="HBox/FloorColumn/Row3"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "■□□"
 
 [node name="Row2" type="VBoxContainer" parent="HBox/FloorColumn"]
 layout_mode = 2
 [node name="Demand2" type="Label" parent="HBox/FloorColumn/Row2"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "2F"
+text = "2층 대기 0"
 [node name="Bar2" type="ColorRect" parent="HBox/FloorColumn/Row2"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(20, 7)
+custom_minimum_size = Vector2(20, 8)
 layout_mode = 2
-color = Color(0.31, 0.63, 1, 1)
+color = Color(0.33, 0.78, 1, 1)
+[node name="Dot2" type="Label" parent="HBox/FloorColumn/Row2"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "■□□"
 
 [node name="Row1" type="VBoxContainer" parent="HBox/FloorColumn"]
 layout_mode = 2
 [node name="Demand1" type="Label" parent="HBox/FloorColumn/Row1"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "1F"
+text = "1층 대기 0"
 [node name="Bar1" type="ColorRect" parent="HBox/FloorColumn/Row1"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(20, 7)
+custom_minimum_size = Vector2(20, 8)
 layout_mode = 2
-color = Color(0.31, 0.63, 1, 1)
+color = Color(0.33, 0.78, 1, 1)
+[node name="Dot1" type="Label" parent="HBox/FloorColumn/Row1"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "■□□"
 
 [node name="ShaftArea" type="Control" parent="HBox"]
-custom_minimum_size = Vector2(360, 470)
+custom_minimum_size = Vector2(390, 470)
 layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="ShaftA" type="ColorRect" parent="HBox/ShaftArea"]
-offset_left = 110.0
+offset_left = 122.0
 offset_top = 18.0
-offset_right = 176.0
+offset_right = 192.0
 offset_bottom = 450.0
-color = Color(0.13, 0.18, 0.27, 1)
+color = Color(0.12, 0.17, 0.26, 1)
 
 [node name="ShaftB" type="ColorRect" parent="HBox/ShaftArea"]
-offset_left = 204.0
+offset_left = 222.0
 offset_top = 18.0
-offset_right = 270.0
+offset_right = 292.0
 offset_bottom = 450.0
-color = Color(0.13, 0.18, 0.27, 1)
+color = Color(0.12, 0.17, 0.26, 1)
 
 [node name="CabA" type="PanelContainer" parent="HBox/ShaftArea"]
 unique_name_in_owner = true
-offset_left = 117.0
+offset_left = 129.0
 offset_top = 404.0
-offset_right = 169.0
-offset_bottom = 432.0
+offset_right = 185.0
+offset_bottom = 434.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_cab")
 
 [node name="CabALabel" type="Label" parent="HBox/ShaftArea/CabA"]
@@ -146,18 +166,18 @@ vertical_alignment = 1
 
 [node name="MarkerA" type="Label" parent="HBox/ShaftArea"]
 unique_name_in_owner = true
-offset_left = 173.0
-offset_top = 404.0
-offset_right = 200.0
+offset_left = 190.0
+offset_top = 405.0
+offset_right = 218.0
 offset_bottom = 430.0
-text = "●"
+text = "OK"
 
 [node name="CabB" type="PanelContainer" parent="HBox/ShaftArea"]
 unique_name_in_owner = true
-offset_left = 211.0
+offset_left = 229.0
 offset_top = 404.0
-offset_right = 263.0
-offset_bottom = 432.0
+offset_right = 285.0
+offset_bottom = 434.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_cab")
 
 [node name="CabBLabel" type="Label" parent="HBox/ShaftArea/CabB"]
@@ -169,39 +189,39 @@ vertical_alignment = 1
 
 [node name="MarkerB" type="Label" parent="HBox/ShaftArea"]
 unique_name_in_owner = true
-offset_left = 267.0
-offset_top = 404.0
-offset_right = 294.0
+offset_left = 290.0
+offset_top = 405.0
+offset_right = 318.0
 offset_bottom = 430.0
-text = "●"
+text = "OK"
 
 [node name="FloorGuide5" type="Label" parent="HBox/ShaftArea"]
-offset_left = 24.0
+offset_left = 28.0
 offset_top = 26.0
-offset_right = 74.0
+offset_right = 88.0
 offset_bottom = 50.0
 text = "5층"
 [node name="FloorGuide4" type="Label" parent="HBox/ShaftArea"]
-offset_left = 24.0
+offset_left = 28.0
 offset_top = 118.0
-offset_right = 74.0
+offset_right = 88.0
 offset_bottom = 142.0
 text = "4층"
 [node name="FloorGuide3" type="Label" parent="HBox/ShaftArea"]
-offset_left = 24.0
+offset_left = 28.0
 offset_top = 210.0
-offset_right = 74.0
+offset_right = 88.0
 offset_bottom = 234.0
 text = "3층"
 [node name="FloorGuide2" type="Label" parent="HBox/ShaftArea"]
-offset_left = 24.0
+offset_left = 28.0
 offset_top = 302.0
-offset_right = 74.0
+offset_right = 88.0
 offset_bottom = 326.0
 text = "2층"
 [node name="FloorGuide1" type="Label" parent="HBox/ShaftArea"]
-offset_left = 24.0
+offset_left = 28.0
 offset_top = 394.0
-offset_right = 74.0
+offset_right = 88.0
 offset_bottom = 418.0
 text = "1층"

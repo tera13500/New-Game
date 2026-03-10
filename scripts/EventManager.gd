@@ -60,5 +60,5 @@ func _random_pool(game_state: GameState) -> Array[EventData]:
 			["guide_rail", "hoist_rope", "brake_system"], [], "예방정비", "guide_rail", target.id, "minor"),
 		EventData.new("floor_miss", "층 정지 오차", "%s 정차 위치 오차가 보고되었습니다." % target.name, "warning", "random",
 			[{"label":"제어반 캘리브레이션 (-1400)", "effect":{"money":-1400, "risk":-3.0, "satisfaction":1.0, "log":"정차 오차 조정"}}, {"label":"다음 점검 때", "effect":{"complaints":1, "risk":1.2, "log":"정차 오차 지연"}}],
-			["controller", "brake_system"], [], "정기점검", "controller", target.id)
+			["controller", "brake_system"], [], "정기점검", "controller", target.id, "minor")
 	]

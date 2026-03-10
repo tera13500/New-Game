@@ -6,6 +6,12 @@ signal campaign_changed(campaign_id: String)
 signal codex_opened
 
 func _ready() -> void:
+	%InspectionButton.custom_minimum_size = Vector2(0, 42)
+	%PreventiveButton.custom_minimum_size = Vector2(0, 42)
+	%EmergencyButton.custom_minimum_size = Vector2(0, 42)
+	%UpgradeButton.custom_minimum_size = Vector2(0, 42)
+	%CampaignButton.custom_minimum_size = Vector2(0, 42)
+
 	%InspectionButton.pressed.connect(func() -> void: emit_signal("action_requested", "inspection"))
 	%PreventiveButton.pressed.connect(func() -> void: emit_signal("action_requested", "preventive"))
 	%EmergencyButton.pressed.connect(func() -> void: emit_signal("action_requested", "emergency"))
@@ -13,11 +19,12 @@ func _ready() -> void:
 	%CampaignButton.pressed.connect(func() -> void: emit_signal("action_requested", "campaign"))
 	%CodexButton.pressed.connect(func() -> void: emit_signal("codex_opened"))
 	%CampaignSelector.clear()
-	%CampaignSelector.add_item("문 끼임 주의", 0)
-	%CampaignSelector.add_item("과밀 탑승 방지", 1)
+	%CampaignSelector.add_item("문 끼임 주의 안내", 0)
+	%CampaignSelector.add_item("과밀 탑승 방지 안내", 1)
 	%CampaignSelector.add_item("비상 신고 안내", 2)
-	%CampaignSelector.add_item("어린이/고령자 배려", 3)
+	%CampaignSelector.add_item("어린이·고령자 배려 안내", 3)
 	%CampaignSelector.item_selected.connect(_on_campaign_selected)
+	_on_campaign_selected(0)
 
 func _on_campaign_selected(index: int) -> void:
 	var ids: Array[String] = ["door_safety", "overload_notice", "emergency_guide", "senior_care"]

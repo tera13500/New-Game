@@ -1,6 +1,34 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/TitleScreen.gd" id="1"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_panel"]
+bg_color = Color(0.07, 0.1, 0.16, 0.98)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.27, 0.45, 0.65, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+content_margin_left = 22
+content_margin_top = 20
+content_margin_right = 22
+content_margin_bottom = 20
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_loop"]
+bg_color = Color(0.11, 0.16, 0.24, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.35, 0.56, 0.75, 1)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
 
 [node name="TitleScreen" type="Control"]
 layout_mode = 3
@@ -14,7 +42,17 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0.05, 0.07, 0.11, 1)
+color = Color(0.04, 0.06, 0.1, 1)
+
+[node name="PixelStars" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = ". . .   . . .   . . .\n   . . . . . . .\n. . .   . . .   . . ."
+horizontal_alignment = 1
+vertical_alignment = 1
+modulate = Color(0.33, 0.53, 0.7, 0.32)
 
 [node name="Center" type="CenterContainer" parent="."]
 layout_mode = 1
@@ -23,8 +61,9 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 
 [node name="Panel" type="PanelContainer" parent="Center"]
-custom_minimum_size = Vector2(760, 470)
+custom_minimum_size = Vector2(900, 620)
 layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_panel")
 
 [node name="VBox" type="VBoxContainer" parent="Center/Panel"]
 layout_mode = 2
@@ -40,27 +79,55 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "v1.1.8"
 horizontal_alignment = 1
+modulate = Color(0.56, 0.84, 1, 1)
 
 [node name="Intro" type="Label" parent="Center/Panel/VBox"]
 layout_mode = 2
 autowrap_mode = 2
-text = "엘리베이터 2대를 운영하며 점검, 예방정비, 혼잡, 만족도, 민원을 관리하는\n승강기 안전관리 시뮬레이션 게임입니다.\n당신은 건물의 운영 책임자이자 안전 관리자입니다."
+text = "엘리베이터 2대를 운영하며 점검, 예방정비, 혼잡, 만족도, 민원을 관리하는\n승강기 안전 운영 시뮬레이션입니다."
 
-[node name="Buttons" type="HBoxContainer" parent="Center/Panel/VBox"]
+[node name="Role" type="Label" parent="Center/Panel/VBox"]
 layout_mode = 2
-theme_override_constants/separation = 8
-alignment = 1
+autowrap_mode = 2
+text = "당신은 건물의 엘리베이터 운영 책임자이자 안전 관리자입니다."
+
+[node name="Goal" type="Label" parent="Center/Panel/VBox"]
+layout_mode = 2
+autowrap_mode = 2
+text = "고장을 줄이고 점검률/안전도를 유지하면서 이용자 만족과 민원을 균형 있게 관리하세요."
+
+[node name="LoopPanel" type="PanelContainer" parent="Center/Panel/VBox"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBox_loop")
+
+[node name="LoopText" type="Label" parent="Center/Panel/VBox/LoopPanel"]
+layout_mode = 2
+autowrap_mode = 2
+text = "플레이 루프: 상태 확인 → 액션 선택 → 이벤트 대응 → Day 리포트 반영"
+
+[node name="HelperLabel" type="Label" parent="Center/Panel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "처음이라면 튜토리얼을 권장합니다."
+modulate = Color(1, 0.9, 0.6, 1)
+
+[node name="Buttons" type="VBoxContainer" parent="Center/Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
 
 [node name="StartTutorialButton" type="Button" parent="Center/Panel/VBox/Buttons"]
 layout_mode = 2
+custom_minimum_size = Vector2(0, 48)
 text = "튜토리얼 시작"
 
 [node name="StartQuickButton" type="Button" parent="Center/Panel/VBox/Buttons"]
 layout_mode = 2
+custom_minimum_size = Vector2(0, 48)
 text = "바로 시작"
 
 [node name="ExitButton" type="Button" parent="Center/Panel/VBox/Buttons"]
 layout_mode = 2
+custom_minimum_size = Vector2(0, 44)
 text = "종료"
 
 [connection signal="pressed" from="Center/Panel/VBox/Buttons/StartTutorialButton" to="." method="_on_start_tutorial_pressed"]
