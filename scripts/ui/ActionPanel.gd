@@ -5,14 +5,6 @@ signal action_requested(action_id: String)
 signal campaign_changed(campaign_id: String)
 signal codex_opened
 
-const COSTS: Dictionary = {
-	"inspection": 1200,
-	"preventive": 2400,
-	"emergency": 5200,
-	"campaign": 800,
-	"upgrade": 2600
-}
-
 @onready var inspection_button: Button = %InspectionButton
 @onready var preventive_button: Button = %PreventiveButton
 @onready var emergency_button: Button = %EmergencyButton
@@ -20,11 +12,11 @@ const COSTS: Dictionary = {
 @onready var campaign_button: Button = %CampaignButton
 
 func _ready() -> void:
-	_setup_button(inspection_button, "정기점검", COSTS.inspection, "기본 점검으로 위험도 감소")
-	_setup_button(preventive_button, "예방정비", COSTS.preventive, "마모도 개선 및 안정화")
-	_setup_button(emergency_button, "긴급수리", COSTS.emergency, "고장 즉시 복구")
-	_setup_button(upgrade_button, "업그레이드", COSTS.upgrade, "장치 성능 강화")
-	_setup_button(campaign_button, "안내강화", COSTS.campaign, "민원/혼잡 완화 캠페인")
+	_setup_button(inspection_button, "정기점검", GameBalance.action_cost("inspection"), "위험도 감소 / 점검률 회복")
+	_setup_button(preventive_button, "예방정비", GameBalance.action_cost("preventive"), "마모도 감소 / 장치 안정화")
+	_setup_button(emergency_button, "긴급수리", GameBalance.action_cost("emergency"), "고장 즉시 복구")
+	_setup_button(upgrade_button, "업그레이드 선택", 0, "상세 비용은 선택 팝업에서 확인")
+	_setup_button(campaign_button, "안내강화", GameBalance.action_cost("campaign"), "민원/혼잡 완화")
 
 	inspection_button.pressed.connect(func() -> void: emit_signal("action_requested", "inspection"))
 	preventive_button.pressed.connect(func() -> void: emit_signal("action_requested", "preventive"))
@@ -42,15 +34,22 @@ func _ready() -> void:
 	_on_campaign_selected(0)
 
 func set_budget(money: int) -> void:
-	inspection_button.disabled = money < int(COSTS.inspection)
-	preventive_button.disabled = money < int(COSTS.preventive)
-	emergency_button.disabled = money < int(COSTS.emergency)
-	campaign_button.disabled = money < int(COSTS.campaign)
-	upgrade_button.disabled = money < int(COSTS.upgrade)
+	_apply_budget_state(inspection_button, money >= GameBalance.action_cost("inspection"), GameBalance.action_cost("inspection"))
+	_apply_budget_state(preventive_button, money >= GameBalance.action_cost("preventive"), GameBalance.action_cost("preventive"))
+	_apply_budget_state(emergency_button, money >= GameBalance.action_cost("emergency"), GameBalance.action_cost("emergency"))
+	_apply_budget_state(campaign_button, money >= GameBalance.action_cost("campaign"), GameBalance.action_cost("campaign"))
+	upgrade_button.disabled = money < GameBalance.upgrade_cost("door_sensor")
+	upgrade_button.tooltip_text = "업그레이드 최소 비용 ₩%s 필요" % _format_number(GameBalance.upgrade_cost("door_sensor")) if upgrade_button.disabled else "상세 비용은 선택 팝업에서 확인"
+
+func _apply_budget_state(button: Button, can_use: bool, needed: int) -> void:
+	button.disabled = not can_use
+	if can_use:
+		return
+	button.tooltip_text = "예산 부족 · 필요 금액 ₩%s" % _format_number(needed)
 
 func _setup_button(button: Button, label: String, cost: int, tip: String) -> void:
-	button.custom_minimum_size = Vector2(0, 46)
-	button.text = "%s\n₩%s" % [label, _format_number(cost)]
+	button.custom_minimum_size = Vector2(0, 50)
+	button.text = "%s\n%s" % [label, "₩%s" % _format_number(cost) if cost > 0 else "상세 비용 팝업"]
 	button.tooltip_text = tip
 
 func _on_campaign_selected(index: int) -> void:

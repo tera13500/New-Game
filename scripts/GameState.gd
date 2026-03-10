@@ -1,7 +1,7 @@
 extends Node
 class_name GameState
 
-const GAME_VERSION: String = "1.1.9"
+const GAME_VERSION: String = "1.1.10"
 const FLOOR_COUNT: int = 5
 const ELEVATOR_COUNT: int = 2
 const INSPECTION_INTERVAL_DAYS: int = 4
@@ -126,9 +126,9 @@ func finish_day() -> Dictionary:
 
 func perform_regular_inspection(elevator_index: int) -> void:
 	var elevator: ElevatorData = get_elevator(elevator_index)
-	if elevator == null or money < 1200:
+	if elevator == null or money < GameBalance.action_cost("inspection"):
 		return
-	money -= 1200
+	money -= GameBalance.action_cost("inspection")
 	elevator.last_inspection_day = day
 	elevator.breakdown_risk = maxf(0.0, elevator.breakdown_risk - 18.0)
 	elevator.recover_component("brake_system", 8.0)
@@ -140,9 +140,9 @@ func perform_regular_inspection(elevator_index: int) -> void:
 
 func perform_preventive_maintenance(elevator_index: int) -> void:
 	var elevator: ElevatorData = get_elevator(elevator_index)
-	if elevator == null or money < 2400:
+	if elevator == null or money < GameBalance.action_cost("preventive"):
 		return
-	money -= 2400
+	money -= GameBalance.action_cost("preventive")
 	elevator.wear = maxf(0.0, elevator.wear - 22.0)
 	elevator.breakdown_risk = maxf(0.0, elevator.breakdown_risk - 12.0)
 	elevator.recover_component("door_operator", 10.0)
@@ -153,7 +153,7 @@ func perform_preventive_maintenance(elevator_index: int) -> void:
 
 func perform_emergency_repair(elevator_index: int) -> void:
 	var elevator: ElevatorData = get_elevator(elevator_index)
-	if elevator == null or money < 5200:
+	if elevator == null or money < GameBalance.action_cost("emergency"):
 		return
 	_resolve_fault_for_elevator(elevator, "immediate")
 	emit_signal("state_changed")
@@ -169,9 +169,9 @@ func resolve_fault_for_elevator_id(elevator_id: int, mode: String) -> bool:
 func _resolve_fault_for_elevator(elevator: ElevatorData, mode: String) -> void:
 	match mode:
 		"immediate":
-			if money < 5200:
+			if money < GameBalance.action_cost("emergency"):
 				return
-			money -= 5200
+			money -= GameBalance.action_cost("emergency")
 			elevator.status = "warning"
 			elevator.wear = maxf(8.0, elevator.wear - 18.0)
 			elevator.breakdown_risk = maxf(0.0, elevator.breakdown_risk - 32.0)
@@ -195,9 +195,9 @@ func _resolve_fault_for_elevator(elevator: ElevatorData, mode: String) -> void:
 			satisfaction = clampf(satisfaction + 0.5, 0.0, 100.0)
 
 func run_safety_campaign(campaign_id: String) -> bool:
-	if not CAMPAIGN_CATALOG.has(campaign_id) or money < 800:
+	if not CAMPAIGN_CATALOG.has(campaign_id) or money < GameBalance.action_cost("campaign"):
 		return false
-	money -= 800
+	money -= GameBalance.action_cost("campaign")
 	var config: Array = CAMPAIGN_CATALOG[campaign_id]
 	active_campaign_ticks[campaign_id] = int(config[1])
 	satisfaction = clampf(satisfaction + 1.2, 0.0, 100.0)
@@ -208,8 +208,7 @@ func apply_upgrade(elevator_index: int, upgrade_id: String) -> bool:
 	var elevator: ElevatorData = get_elevator(elevator_index)
 	if elevator == null or elevator.has_upgrade(upgrade_id):
 		return false
-	var cost_map: Dictionary = {"door_sensor":2600, "speed_drive":2800, "maintenance_suite":3000, "durability_pack":3400, "capacity_tuning":2800}
-	var cost: int = int(cost_map.get(upgrade_id, -1))
+	var cost: int = GameBalance.upgrade_cost(upgrade_id)
 	if cost < 0 or money < cost:
 		return false
 	money -= cost
@@ -228,8 +227,7 @@ func apply_upgrade_with_feedback(elevator_index: int, upgrade_id: String) -> Dic
 		return {"ok": false, "message": "업그레이드 실패: 대상 호기를 찾을 수 없습니다."}
 	if elevator.has_upgrade(upgrade_id):
 		return {"ok": false, "message": "업그레이드 실패: 이미 설치된 항목입니다."}
-	var cost_map: Dictionary = {"door_sensor":2600, "speed_drive":2800, "maintenance_suite":3000, "durability_pack":3400, "capacity_tuning":2800}
-	var cost: int = int(cost_map.get(upgrade_id, -1))
+	var cost: int = GameBalance.upgrade_cost(upgrade_id)
 	if cost < 0:
 		return {"ok": false, "message": "업그레이드 실패: 적용할 수 없는 항목입니다."}
 	if money < cost:
@@ -340,7 +338,7 @@ func _update_degradation() -> void:
 		if e.has_upgrade("door_sensor"):
 			risk_gain *= 0.92
 		e.breakdown_risk = clampf(e.breakdown_risk + risk_gain, 0.0, 100.0)
-		if e.breakdown_risk >= 88.0 and randf() < 0.12:
+		if e.breakdown_risk >= GameBalance.FAULT_RISK_THRESHOLD and randf() < 0.12:
 			e.status = "fault"
 			complaints += 2
 			satisfaction = clampf(satisfaction - 7.0, 0.0, 100.0)

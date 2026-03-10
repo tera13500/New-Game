@@ -30,6 +30,7 @@ func show_event(event_data: EventData) -> void:
 		button.custom_minimum_size = Vector2(0, 48)
 		button.clip_text = true
 		button.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		_style_event_button(button)
 		button.pressed.connect(func() -> void:
 			var payload: Dictionary = option.get("effect", {}).duplicate()
 			if option.has("upgrade_id"):
@@ -70,3 +71,20 @@ func _effect_hint(effect: Dictionary) -> String:
 	if parts.is_empty():
 		return "영향: 상태 변화"
 	return "영향: " + ", ".join(parts)
+
+func _style_event_button(button: Button) -> void:
+	var normal := StyleBoxFlat.new()
+	normal.bg_color = Color("#28324d")
+	normal.border_width_left = 2
+	normal.border_width_top = 2
+	normal.border_width_right = 2
+	normal.border_width_bottom = 2
+	normal.border_color = Color("#5f7db8")
+	var hover := normal.duplicate()
+	hover.bg_color = Color("#334062")
+	var pressed := normal.duplicate()
+	pressed.bg_color = Color("#1f2a42")
+	button.add_theme_stylebox_override("normal", normal)
+	button.add_theme_stylebox_override("hover", hover)
+	button.add_theme_stylebox_override("pressed", pressed)
+	button.add_theme_color_override("font_color", Color("#e8eefc"))

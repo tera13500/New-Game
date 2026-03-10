@@ -5,7 +5,7 @@ func get_event_for_state(game_state: GameState) -> EventData:
 	var forced: EventData = _pick_condition_event(game_state)
 	if forced != null:
 		return forced
-	if randf() < 0.52:
+	if randf() < GameBalance.EVENT_TRIGGER_CHANCE:
 		return _pick_weighted_random_event(game_state)
 	return null
 

@@ -1,9 +1,50 @@
-[gd_resource type="Theme" format=3]
+[gd_resource type="Theme" load_steps=5 format=3]
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_button_normal"]
+bg_color = Color(0.16, 0.2, 0.3, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.37, 0.49, 0.72, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_button_hover"]
+bg_color = Color(0.2, 0.25, 0.37, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.4, 0.56, 0.83, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_button_pressed"]
+bg_color = Color(0.12, 0.16, 0.25, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.34, 0.44, 0.66, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_button_disabled"]
+bg_color = Color(0.12, 0.14, 0.2, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.23, 0.27, 0.39, 1)
 
 [resource]
 default_font_size = 18
-Button/font_sizes/font_size = 18
 Label/font_sizes/font_size = 18
+Button/font_sizes/font_size = 17
+Button/styles/normal = SubResource("StyleBox_button_normal")
+Button/styles/hover = SubResource("StyleBox_button_hover")
+Button/styles/pressed = SubResource("StyleBox_button_pressed")
+Button/styles/disabled = SubResource("StyleBox_button_disabled")
+Button/colors/font_color = Color(0.91, 0.93, 0.99, 1)
+Button/colors/font_disabled_color = Color(0.64, 0.68, 0.8, 0.8)
+HeadingLabel/base_type = &"Label"
 HeadingLabel/font_sizes/font_size = 34
+SubTitleLabel/base_type = &"Label"
 SubTitleLabel/font_sizes/font_size = 24
+SmallLabel/base_type = &"Label"
 SmallLabel/font_sizes/font_size = 14
