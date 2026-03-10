@@ -41,6 +41,8 @@ var elevators: Array[ElevatorData] = []
 var round_log: Array[String] = []
 var active_campaign_ticks: Dictionary = {"door_safety": 0, "overload_notice": 0, "emergency_guide": 0, "senior_care": 0}
 var current_goal: Dictionary = {}
+var no_fault_streak: int = 0
+var best_no_fault_streak: int = 0
 
 func _ready() -> void:
 	seed_dummy_data()
@@ -90,10 +92,16 @@ func advance_tick() -> void:
 func finish_day() -> Dictionary:
 	var avg_waiting: float = _total_demand() / float(FLOOR_COUNT)
 	var goal_result: Dictionary = _evaluate_goal()
+	var fault_count: int = _count_faults()
+	if fault_count == 0:
+		no_fault_streak += 1
+		best_no_fault_streak = max(best_no_fault_streak, no_fault_streak)
+	else:
+		no_fault_streak = 0
 	var summary: Dictionary = {
 		"day": day,
 		"avg_waiting": avg_waiting,
-		"fault_count": _count_faults(),
+		"fault_count": fault_count,
 		"inspection_overdue": _count_inspection_due(),
 		"best_prevention": _best_prevention_text(),
 		"critical_component": _most_critical_component_name(),
@@ -101,7 +109,10 @@ func finish_day() -> Dictionary:
 		"recommendation": _next_recommendation_text(),
 		"insight": _daily_insight_text(),
 		"goal_text": str(current_goal.get("label", "-")),
-		"goal_result": goal_result
+		"goal_result": goal_result,
+		"streak": no_fault_streak,
+		"best_streak": best_no_fault_streak,
+		"game_over_warning": _game_over_warning()
 	}
 
 	if bool(goal_result.get("success", false)):
@@ -109,7 +120,7 @@ func finish_day() -> Dictionary:
 		safety_score = clampf(safety_score + 1.2, 0.0, 100.0)
 
 	# 운영 성과 보상 루프(과하지 않게)
-	if _count_faults() == 0:
+	if fault_count == 0:
 		money += 450
 	if complaints <= 3:
 		money += 350
@@ -133,9 +144,11 @@ func perform_regular_inspection(elevator_index: int) -> void:
 	elevator.breakdown_risk = maxf(0.0, elevator.breakdown_risk - 18.0)
 	elevator.recover_component("brake_system", 8.0)
 	elevator.recover_component("controller", 6.0)
-	elevator.status = "normal"
-	inspection_rate = clampf(inspection_rate + 10.0, 0.0, 100.0)
-	safety_score = clampf(safety_score + 2.5, 0.0, 100.0)
+	elevator.status = "inspection_due"
+	elevator.inspection_penalty_ticks = 1
+	inspection_rate = clampf(inspection_rate + 9.0, 0.0, 100.0)
+	safety_score = clampf(safety_score + 2.2, 0.0, 100.0)
+	satisfaction = clampf(satisfaction - 0.8, 0.0, 100.0)
 	emit_signal("state_changed")
 
 func perform_preventive_maintenance(elevator_index: int) -> void:
@@ -282,13 +295,14 @@ func _tick_campaigns() -> void:
 
 func _generate_demand() -> void:
 	var peak_multiplier: float = 1.0
-	if tick_in_day >= 3 and tick_in_day <= 5:
+	if tick_in_day >= 4 and tick_in_day <= 8:
 		peak_multiplier = 1.45
+	var day_pressure: float = 1.0 + min(0.35, float(day - 1) * 0.03)
 	if int(active_campaign_ticks["senior_care"]) > 0:
 		peak_multiplier *= 0.92
 	for floor: int in FLOOR_COUNT:
-		var generated: int = int(round(randi_range(0, 3) * peak_multiplier))
-		floor_demands[floor] = clampi(floor_demands[floor] + generated, 0, 28)
+		var generated: int = int(round(randi_range(0, 3) * peak_multiplier * day_pressure))
+		floor_demands[floor] = clampi(floor_demands[floor] + generated, 0, 32)
 
 func _assign_targets() -> void:
 	var hot: Array[int] = _floors_by_demand_desc()
@@ -301,6 +315,10 @@ func _assign_targets() -> void:
 func _move_elevators() -> void:
 	for e: ElevatorData in elevators:
 		if e.status == "fault":
+			continue
+		if e.inspection_penalty_ticks > 0:
+			e.inspection_penalty_ticks -= 1
+			e.status = "inspection_due"
 			continue
 		var step: int = 2 if e.speed_factor > 1.08 and randf() < 0.45 else 1
 		if e.current_floor < e.target_floor:
@@ -322,7 +340,7 @@ func _update_degradation() -> void:
 	for e: ElevatorData in elevators:
 		if e.status == "fault":
 			continue
-		var wear_gain: float = (0.8 + e.load * 1.2 + float(e.age_years) * 0.03) / e.durability_factor
+		var wear_gain: float = (0.8 + e.load * 1.2 + float(e.age_years) * 0.03 + float(day - 1) * 0.02) / e.durability_factor
 		if e.has_upgrade("maintenance_suite"):
 			wear_gain *= 0.78
 		e.wear = clampf(e.wear + wear_gain, 0.0, 100.0)
@@ -453,3 +471,13 @@ func _next_recommendation_text() -> String:
 
 func _daily_insight_text() -> String:
 	return "고장 후 수리보다 취약 부품을 미리 보강할 때 안전 성과가 크게 향상됩니다."
+
+
+func _game_over_warning() -> String:
+	if money <= 5000:
+		return "경고: 예산이 매우 낮습니다."
+	if safety_score < 45.0:
+		return "경고: 안전 점수가 위험 구간입니다."
+	if complaints >= 18:
+		return "경고: 민원이 폭주 중입니다."
+	return "안정 운영 중"

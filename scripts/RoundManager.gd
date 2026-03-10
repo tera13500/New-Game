@@ -5,7 +5,7 @@ signal tick_advanced
 signal day_finished
 
 @export var tick_interval_sec: float = 1.2
-@export var ticks_per_day: int = 8
+@export var ticks_per_day: int = 14
 
 var _running: bool = false
 var _accum: float = 0.0

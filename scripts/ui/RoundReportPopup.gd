@@ -22,14 +22,16 @@ func show_report(summary: Dictionary, game_state: GameState) -> void:
 		summary.get("goal_text", "-"),
 		"성공 +%d원" % int(goal_result.get("reward", 0)) if bool(goal_result.get("success", false)) else "실패"
 	]
-	%Commentary.text = "%s\n핵심 포인트\n- 예방 성과: %s\n- 취약 장치: %s\n- 놓친 신호: %s\n- 다음 권장 액션: %s" % [
+	%Commentary.text = "%s\n핵심 포인트\n- 예방 성과: %s\n- 취약 장치: %s\n- 놓친 신호: %s\n- 다음 권장 액션: %s\n- 무고장 연속일: %d (최고 %d)" % [
 		goal_line,
 		summary.get("best_prevention", "-"),
 		summary.get("critical_component", "-"),
 		summary.get("missed_signal", "-"),
-		summary.get("recommendation", "-")
+		summary.get("recommendation", "-"),
+		int(summary.get("streak", 0)),
+		int(summary.get("best_streak", 0))
 	]
-	%Footer.text = "예산 %s원 | 안전 %.1f | 만족 %.1f | 민원 %d" % [_format_number(game_state.money), game_state.safety_score, game_state.satisfaction, game_state.complaints]
+	%Footer.text = "예산 %s원 | 안전 %.1f | 만족 %.1f | 민원 %d\n%s" % [_format_number(game_state.money), game_state.safety_score, game_state.satisfaction, game_state.complaints, str(summary.get("game_over_warning", "안정 운영 중"))]
 	visible = true
 
 func _format_number(value: int) -> String:

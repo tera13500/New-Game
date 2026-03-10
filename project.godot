@@ -14,7 +14,9 @@ run/main_scene="res://scenes/TitleScreen.tscn"
 config/features=PackedStringArray("4.6")
 config/icon="res://icon.svg"
 config/description="Version 1.1.10"
-gui/theme/custom="res://themes/PixelTheme.tres"
+
+[gui]
+theme/custom="res://themes/PixelTheme.tres"
 
 [display]
 window/size/viewport_width=1920

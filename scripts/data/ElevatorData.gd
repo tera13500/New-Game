@@ -20,6 +20,7 @@ var load: float
 var age_years: int
 var last_inspection_day: int
 var installed_upgrades: Array[String] = []
+var inspection_penalty_ticks: int = 0
 
 var speed_factor: float = 1.0
 var durability_factor: float = 1.0

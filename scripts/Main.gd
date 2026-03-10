@@ -125,12 +125,21 @@ func _on_day_finished() -> void:
 	unlock_manager.evaluate_titles(game_state)
 	report_popup.show_report(game_state.finish_day(), game_state)
 
+func _is_tutorial_free_action(action_id: String) -> bool:
+	return tutorial_overlay.visible and _tutorial_waiting_action == action_id and action_id == "inspection"
+
 func _on_action_requested(action_id: String) -> void:
 	if _tutorial_waiting_action != "" and action_id == _tutorial_waiting_action:
 		_complete_tutorial_action_step()
 	match action_id:
 		"inspection":
-			if _try_pay(action_id, "예산 부족: 정기점검 불가"):
+			if _is_tutorial_free_action(action_id):
+				var before_money: int = game_state.money
+				game_state.perform_regular_inspection(_selected_index)
+				game_state.money = before_money
+				game_state.emit_signal("state_changed")
+				_add_recent_log("info", "튜토리얼 실습: 정기점검(비용 면제)")
+			elif _try_pay(action_id, "예산 부족: 정기점검 불가"):
 				game_state.perform_regular_inspection(_selected_index)
 				_add_recent_log("check", "정기점검 실행")
 		"preventive":
