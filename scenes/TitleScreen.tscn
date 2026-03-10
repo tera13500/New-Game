@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/TitleScreen.gd" id="1"]
 
@@ -13,9 +13,9 @@ corner_radius_top_left = 2
 corner_radius_top_right = 2
 corner_radius_bottom_right = 2
 corner_radius_bottom_left = 2
-content_margin_left = 22
+content_margin_left = 24
 content_margin_top = 20
-content_margin_right = 22
+content_margin_right = 24
 content_margin_bottom = 20
 
 [sub_resource type="StyleBoxFlat" id="StyleBox_loop"]
@@ -25,10 +25,14 @@ border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
 border_color = Color(0.35, 0.56, 0.75, 1)
-corner_radius_top_left = 2
-corner_radius_top_right = 2
-corner_radius_bottom_right = 2
-corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_button"]
+bg_color = Color(0.13, 0.21, 0.32, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.45, 0.7, 0.88, 1)
 
 [node name="TitleScreen" type="Control"]
 layout_mode = 3
@@ -44,15 +48,36 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0.04, 0.06, 0.1, 1)
 
-[node name="PixelStars" type="Label" parent="."]
+[node name="ShaftDecorA" type="ColorRect" parent="."]
+offset_left = 120.0
+offset_top = 140.0
+offset_right = 190.0
+offset_bottom = 940.0
+color = Color(0.11, 0.16, 0.24, 0.55)
+
+[node name="ShaftDecorB" type="ColorRect" parent="."]
+offset_left = 240.0
+offset_top = 140.0
+offset_right = 310.0
+offset_bottom = 940.0
+color = Color(0.11, 0.16, 0.24, 0.55)
+
+[node name="ShaftDecorC" type="ColorRect" parent="."]
+offset_left = 1610.0
+offset_top = 140.0
+offset_right = 1680.0
+offset_bottom = 940.0
+color = Color(0.11, 0.16, 0.24, 0.55)
+
+[node name="PixelGrid" type="Label" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-text = ". . .   . . .   . . .\n   . . . . . . .\n. . .   . . .   . . ."
+text = "■ □ ■ □ ■ □ ■ □ ■ □ ■\n□ ■ □ ■ □ ■ □ ■ □ ■ □\n■ □ ■ □ ■ □ ■ □ ■ □ ■"
 horizontal_alignment = 1
 vertical_alignment = 1
-modulate = Color(0.33, 0.53, 0.7, 0.32)
+modulate = Color(0.39, 0.58, 0.74, 0.23)
 
 [node name="Center" type="CenterContainer" parent="."]
 layout_mode = 1
@@ -61,7 +86,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 
 [node name="Panel" type="PanelContainer" parent="Center"]
-custom_minimum_size = Vector2(900, 620)
+custom_minimum_size = Vector2(950, 650)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBox_panel")
 
@@ -73,28 +98,31 @@ theme_override_constants/separation = 12
 layout_mode = 2
 text = "Elevator Safety Tycoon"
 horizontal_alignment = 1
+theme_override_font_sizes/font_size = 48
 
 [node name="VersionLabel" type="Label" parent="Center/Panel/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "v1.1.8"
+text = "v1.1.9"
 horizontal_alignment = 1
 modulate = Color(0.56, 0.84, 1, 1)
+theme_override_font_sizes/font_size = 20
 
 [node name="Intro" type="Label" parent="Center/Panel/VBox"]
 layout_mode = 2
 autowrap_mode = 2
-text = "엘리베이터 2대를 운영하며 점검, 예방정비, 혼잡, 만족도, 민원을 관리하는\n승강기 안전 운영 시뮬레이션입니다."
+text = "엘리베이터 2대를 운영하며 안전, 점검, 민원, 만족도를 균형 관리하는\n도트 감성 운영 시뮬레이션 게임입니다."
+theme_override_font_sizes/font_size = 20
 
 [node name="Role" type="Label" parent="Center/Panel/VBox"]
 layout_mode = 2
 autowrap_mode = 2
-text = "당신은 건물의 엘리베이터 운영 책임자이자 안전 관리자입니다."
+text = "당신은 건물의 승강기 운영 책임자입니다. 작은 경고를 먼저 잡아 대형 사고를 막으세요."
 
 [node name="Goal" type="Label" parent="Center/Panel/VBox"]
 layout_mode = 2
 autowrap_mode = 2
-text = "고장을 줄이고 점검률/안전도를 유지하면서 이용자 만족과 민원을 균형 있게 관리하세요."
+text = "핵심 목표: 고장 최소화 · 점검률 유지 · 민원 억제 · 일일 목표 달성"
 
 [node name="LoopPanel" type="PanelContainer" parent="Center/Panel/VBox"]
 layout_mode = 2
@@ -108,7 +136,7 @@ text = "플레이 루프: 상태 확인 → 액션 선택 → 이벤트 대응 �
 [node name="HelperLabel" type="Label" parent="Center/Panel/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "처음이라면 튜토리얼을 권장합니다."
+text = "처음이라면 튜토리얼 시작을 권장합니다."
 modulate = Color(1, 0.9, 0.6, 1)
 
 [node name="Buttons" type="VBoxContainer" parent="Center/Panel/VBox"]
@@ -117,18 +145,21 @@ theme_override_constants/separation = 10
 
 [node name="StartTutorialButton" type="Button" parent="Center/Panel/VBox/Buttons"]
 layout_mode = 2
-custom_minimum_size = Vector2(0, 48)
+custom_minimum_size = Vector2(0, 52)
 text = "튜토리얼 시작"
+theme_override_styles/normal = SubResource("StyleBox_button")
 
 [node name="StartQuickButton" type="Button" parent="Center/Panel/VBox/Buttons"]
 layout_mode = 2
-custom_minimum_size = Vector2(0, 48)
+custom_minimum_size = Vector2(0, 52)
 text = "바로 시작"
+theme_override_styles/normal = SubResource("StyleBox_button")
 
 [node name="ExitButton" type="Button" parent="Center/Panel/VBox/Buttons"]
 layout_mode = 2
-custom_minimum_size = Vector2(0, 44)
+custom_minimum_size = Vector2(0, 46)
 text = "종료"
+theme_override_styles/normal = SubResource("StyleBox_button")
 
 [connection signal="pressed" from="Center/Panel/VBox/Buttons/StartTutorialButton" to="." method="_on_start_tutorial_pressed"]
 [connection signal="pressed" from="Center/Panel/VBox/Buttons/StartQuickButton" to="." method="_on_start_quick_pressed"]

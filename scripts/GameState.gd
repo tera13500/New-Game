@@ -1,7 +1,7 @@
 extends Node
 class_name GameState
 
-const GAME_VERSION: String = "1.1.8"
+const GAME_VERSION: String = "1.1.9"
 const FLOOR_COUNT: int = 5
 const ELEVATOR_COUNT: int = 2
 const INSPECTION_INTERVAL_DAYS: int = 4
@@ -195,9 +195,9 @@ func _resolve_fault_for_elevator(elevator: ElevatorData, mode: String) -> void:
 			satisfaction = clampf(satisfaction + 0.5, 0.0, 100.0)
 
 func run_safety_campaign(campaign_id: String) -> bool:
-	if not CAMPAIGN_CATALOG.has(campaign_id) or money < 900:
+	if not CAMPAIGN_CATALOG.has(campaign_id) or money < 800:
 		return false
-	money -= 900
+	money -= 800
 	var config: Array = CAMPAIGN_CATALOG[campaign_id]
 	active_campaign_ticks[campaign_id] = int(config[1])
 	satisfaction = clampf(satisfaction + 1.2, 0.0, 100.0)

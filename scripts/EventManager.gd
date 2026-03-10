@@ -5,7 +5,7 @@ func get_event_for_state(game_state: GameState) -> EventData:
 	var forced: EventData = _pick_condition_event(game_state)
 	if forced != null:
 		return forced
-	if randf() < 0.44:
+	if randf() < 0.52:
 		return _pick_weighted_random_event(game_state)
 	return null
 
@@ -60,5 +60,26 @@ func _random_pool(game_state: GameState) -> Array[EventData]:
 			["guide_rail", "hoist_rope", "brake_system"], [], "예방정비", "guide_rail", target.id, "minor"),
 		EventData.new("floor_miss", "층 정지 오차", "%s 정차 위치 오차가 보고되었습니다." % target.name, "warning", "random",
 			[{"label":"제어반 캘리브레이션 (-1400)", "effect":{"money":-1400, "risk":-3.0, "satisfaction":1.0, "log":"정차 오차 조정"}}, {"label":"다음 점검 때", "effect":{"complaints":1, "risk":1.2, "log":"정차 오차 지연"}}],
-			["controller", "brake_system"], [], "정기점검", "controller", target.id, "minor")
+			["controller", "brake_system"], [], "정기점검", "controller", target.id, "minor"),
+		EventData.new("call_button_fault", "호출 버튼 오작동", "%d층 호출 버튼 반응이 지연됩니다." % randi_range(1, 5), "warning", "random",
+			[{"label":"현장 점검 인력 투입 (-1000)", "effect":{"money":-1000, "satisfaction":1.0, "complaints":-1, "log":"호출 버튼 점검"}}, {"label":"안내문 부착", "effect":{"satisfaction":-0.8, "complaints":1, "log":"버튼 지연 안내"}}],
+			["controller"], [], "정기점검", "controller", -1, "minor"),
+		EventData.new("night_stable", "야간 저부하 안정 운행", "야간 구간에서 운행 부하가 낮아 안정성이 개선되었습니다.", "normal", "random",
+			[{"label":"운영 데이터 기록", "effect":{"safety":1.0, "satisfaction":0.8, "log":"야간 안정 데이터 반영"}}],
+			[], [], "균형 운영 유지", "", -1, "info"),
+		EventData.new("elderly_feedback", "배려 안내 효과", "어린이·고령자 배려 안내로 민원이 완화되었습니다.", "normal", "random",
+			[{"label":"효과 유지", "effect":{"complaints":-1, "satisfaction":1.2, "log":"배려 안내 효과"}}],
+			[], ["senior_care"], "안내강화", "", -1, "info"),
+		EventData.new("power_check", "정전 대비 점검 권고", "예방 차원에서 비상전원 점검 권고가 도착했습니다.", "warning", "random",
+			[{"label":"비상전원 점검 (-1100)", "effect":{"money":-1100, "safety":2.0, "log":"정전 대비 점검"}}, {"label":"보류", "effect":{"risk":1.3, "log":"정전 대비 점검 보류"}}],
+			["emergency_call", "controller"], [], "정기점검", "", -1, "minor"),
+		EventData.new("rush_hour_wave", "출근 시간 혼잡 파동", "짧은 시간 대기 인원이 급증했습니다.", "warning", "random",
+			[{"label":"혼잡 완화 안내 (-700)", "effect":{"money":-700, "complaints":-1, "satisfaction":0.8, "log":"혼잡 완화 안내"}}, {"label":"대기", "effect":{"complaints":1, "satisfaction":-1.0, "log":"혼잡 대응 지연"}}],
+			["overload_sensor"], ["overload_notice"], "안내강화", "", -1, "minor"),
+		EventData.new("micro_jitter", "미세 진동 감지", "%s에서 미세 진동 패턴이 감지되었습니다." % target.name, "risk", "random",
+			[{"label":"예방정비 선반영 (-1500)", "effect":{"money":-1500, "risk":-2.8, "safety":1.0, "log":"미세 진동 예방정비"}}, {"label":"추적 관찰", "effect":{"risk":1.4, "log":"미세 진동 관찰"}}],
+			["guide_rail", "hoist_rope"], [], "예방정비", "", target.id, "minor"),
+		EventData.new("campaign_boost", "캠페인 체감 상승", "안내 캠페인 반응이 좋아 만족도가 상승했습니다.", "normal", "random",
+			[{"label":"현행 유지", "effect":{"satisfaction":1.5, "complaints":-1, "log":"캠페인 긍정 반응"}}],
+			[], ["door_safety", "overload_notice"], "안내강화", "", -1, "info")
 	]

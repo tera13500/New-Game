@@ -1,5 +1,16 @@
 extends Control
 
+const ACTION_COSTS: Dictionary = {
+	"inspection": 1200,
+	"preventive": 2400,
+	"emergency": 5200,
+	"campaign": 800
+}
+const MAX_MAJOR_EVENTS_PER_DAY: int = 1
+const EVENT_COOLDOWN_TICKS: int = 3
+const MAX_RECENT_LOGS: int = 5
+const MAX_RECENT_EVENT_MEMORY: int = 6
+
 @onready var game_state: GameState = $GameState
 @onready var event_manager: EventManager = $EventManager
 @onready var round_manager: RoundManager = $RoundManager
@@ -16,7 +27,9 @@ extends Control
 @onready var tutorial_step_label: Label = %TutorialStepLabel
 @onready var tutorial_text: Label = %TutorialText
 @onready var tutorial_next_button: Button = %TutorialNextButton
-@onready var recent_log_label: Label = %RecentLogLabel
+@onready var tutorial_hint: Label = %TutorialHint
+@onready var tutorial_focus_frame: PanelContainer = %TutorialFocusFrame
+@onready var recent_log_list: VBoxContainer = %RecentLogList
 
 @onready var money_value: Label = %MoneyValue
 @onready var safety_value: Label = %SafetyValue
@@ -42,18 +55,19 @@ var _selected_index: int = 0
 var _selected_campaign_id: String = "door_safety"
 var _event_cooldown_ticks: int = 0
 var _major_event_count_day: int = 0
-var _recent_logs: Array[String] = []
+var _recent_logs: Array[Dictionary] = []
 var _recent_event_ids: Array[String] = []
 var _tutorial_step: int = 0
+var _tutorial_waiting_action: String = ""
 var _tutorial_pages: Array[Dictionary] = [
-	{"title":"목표", "body":"고장을 줄이고 안전점수·만족도를 지키며 민원을 관리하세요.\n오늘 목표를 달성하면 추가 예산을 획득합니다."},
-	{"title":"상단 자원 카드", "body":"예산·안전·만족·점검률·민원·진행 시간을 확인합니다.\n수치가 급격히 흔들리면 하단 액션으로 즉시 대응하세요."},
-	{"title":"중앙 BuildingView", "body":"층별 대기량과 A/B 호기 위치를 보여줍니다.\n붉은 상태 마커는 즉시 개입이 필요한 고장/위험 신호입니다."},
-	{"title":"우측 상태 패널", "body":"선택 호기의 현재 층, 마모도, 위험도, 점검 경과를 확인합니다.\n핵심 장치/캠페인/권장 액션 순서로 우선순위를 정하세요."},
-	{"title":"하단 액션 버튼", "body":"정기점검, 예방정비, 긴급수리, 업그레이드, 안내강화를 실행합니다.\n즉각 리스크 대응은 긴급수리, 장기 안정화는 점검/정비가 핵심입니다."},
-	{"title":"오늘 목표", "body":"우측 패널의 오늘 목표와 권장 액션을 먼저 읽고 행동하세요.\n목표 실패보다 고장 방지가 항상 우선입니다."},
-	{"title":"이벤트 처리", "body":"Major 이벤트만 팝업으로 뜨고, Minor/Info는 최근 로그에 자동 기록됩니다.\n같은 경고는 연속 팝업을 억제해 운영 집중도를 유지합니다."},
-	{"title":"시작 준비 완료", "body":"이제 게임을 시작합니다.\n로그를 보며 작은 신호를 먼저 잡으면 안정 운영이 쉬워집니다."}
+	{"title":"게임 목표", "body":"고장을 줄이고 안전·만족을 유지해 일일 목표를 달성하세요.", "focus":"root_top"},
+	{"title":"상단 자원 카드", "body":"예산/안전/만족/점검률/민원을 먼저 보고 오늘 우선순위를 정합니다.", "focus":"top"},
+	{"title":"중앙 BuildingView", "body":"층별 대기량과 A/B호기 상태를 확인하세요. 붉은 마커는 즉시 대응 신호입니다.", "focus":"building"},
+	{"title":"우측 운영 패널", "body":"현재 상태와 권장 액션, 최근 로그를 확인해 다음 행동을 결정합니다.", "focus":"right"},
+	{"title":"실습: 정기점검", "body":"하단 [정기점검] 버튼을 1회 눌러보세요.", "focus":"actions", "requires_action":"inspection"},
+	{"title":"오늘 목표", "body":"목표 달성 보상은 예산과 안전 유지에 큰 도움이 됩니다.", "focus":"recommend"},
+	{"title":"최근 로그", "body":"Minor/Info 이벤트는 로그에서 빠르게 추적하세요.", "focus":"logs"},
+	{"title":"시작 준비 완료", "body":"이제 운영을 시작합니다. 작은 경고를 먼저 잡는 것이 핵심입니다.", "focus":"building"}
 ]
 
 func _ready() -> void:
@@ -98,17 +112,17 @@ func _on_tick() -> void:
 		return
 	if event_data.event_level == "major" and _can_show_major_popup(event_data):
 		_major_event_count_day += 1
-		_event_cooldown_ticks = 3
+		_event_cooldown_ticks = EVENT_COOLDOWN_TICKS
 		_recent_event_ids.push_front(event_data.event_id)
-		if _recent_event_ids.size() > 5:
-			_recent_event_ids.resize(5)
+		if _recent_event_ids.size() > MAX_RECENT_EVENT_MEMORY:
+			_recent_event_ids.resize(MAX_RECENT_EVENT_MEMORY)
 		round_manager.stop()
 		event_popup.show_event(event_data)
 	else:
 		_apply_minor_event(event_data)
 
 func _can_show_major_popup(event_data: EventData) -> bool:
-	if _major_event_count_day >= 1 and event_data.event_id != "fault_real":
+	if _major_event_count_day >= MAX_MAJOR_EVENTS_PER_DAY and event_data.event_id != "fault_real":
 		return false
 	if _recent_event_ids.has(event_data.event_id):
 		return false
@@ -131,22 +145,35 @@ func _on_day_finished() -> void:
 	report_popup.show_report(summary, game_state)
 
 func _on_action_requested(action_id: String) -> void:
+	if _tutorial_waiting_action != "" and action_id == _tutorial_waiting_action:
+		_tutorial_waiting_action = ""
+		tutorial_hint.text = "실습 완료! 다음 버튼으로 진행하세요."
+		tutorial_next_button.disabled = false
 	match action_id:
 		"inspection":
-			game_state.perform_regular_inspection(_selected_index)
-			_add_recent_log("check", "정기점검 실행")
+			if _try_pay(action_id, "예산 부족: 정기점검 불가"):
+				game_state.perform_regular_inspection(_selected_index)
+				_add_recent_log("check", "정기점검 실행")
 		"preventive":
-			game_state.perform_preventive_maintenance(_selected_index)
-			_add_recent_log("check", "예방정비 실행")
+			if _try_pay(action_id, "예산 부족: 예방정비 불가"):
+				game_state.perform_preventive_maintenance(_selected_index)
+				_add_recent_log("check", "예방정비 실행")
 		"emergency":
-			game_state.perform_emergency_repair(_selected_index)
-			_add_recent_log("warn", "긴급수리 실행")
+			if _try_pay(action_id, "예산 부족: 긴급수리 불가"):
+				game_state.perform_emergency_repair(_selected_index)
+				_add_recent_log("warn", "긴급수리 실행")
 		"campaign":
 			if not game_state.run_safety_campaign(_selected_campaign_id):
 				_add_recent_log("warn", "캠페인 적용 실패: 예산 부족")
 			else:
 				_add_recent_log("info", "안내 캠페인 적용")
 		"upgrade": _show_upgrade_choices()
+
+func _try_pay(action_id: String, fail_log: String) -> bool:
+	if game_state.money < int(ACTION_COSTS.get(action_id, 0)):
+		_add_recent_log("warn", fail_log)
+		return false
+	return true
 
 func _show_upgrade_choices() -> void:
 	round_manager.stop()
@@ -163,10 +190,7 @@ func _show_upgrade_choices() -> void:
 func _on_event_option_chosen(effect: Dictionary, event_data: EventData) -> void:
 	if effect.has("upgrade_id"):
 		var result: Dictionary = game_state.apply_upgrade_with_feedback(_selected_index, str(effect["upgrade_id"]))
-		if not bool(result.get("ok", false)):
-			_add_recent_log("warn", str(result.get("message", "업그레이드 적용 실패")))
-		else:
-			_add_recent_log("check", "업그레이드 적용 완료")
+		_add_recent_log("check" if bool(result.get("ok", false)) else "warn", str(result.get("message", "업그레이드 처리")))
 		if bool(result.get("ok", false)) and str(effect["upgrade_id"]) == "door_sensor":
 			unlock_manager.unlock_component("door_sensor")
 		_refresh_all()
@@ -178,14 +202,13 @@ func _on_event_option_chosen(effect: Dictionary, event_data: EventData) -> void:
 		game_state.apply_effect(effect, event_data.target_elevator_id)
 	else:
 		game_state.apply_effect(effect, event_data.target_elevator_id)
-
 	_add_recent_log("warn", event_data.title)
+
 	var unlocked_any: bool = false
 	for cid: String in event_data.component_tags:
 		if not unlock_manager.unlocked_components.has(cid):
 			unlocked_any = true
 		unlock_manager.unlock_component(cid)
-
 	if not unlocked_any:
 		round_manager.start()
 
@@ -213,7 +236,7 @@ func _refresh_all() -> void:
 	var elevator: ElevatorData = game_state.get_elevator(_selected_index)
 	if elevator != null:
 		building_view.set_selected_elevator(elevator.id)
-	recent_log_label.text = "최근 로그\n" + "\n".join(_recent_logs)
+	_render_recent_logs()
 
 func _refresh_top_bar() -> void:
 	money_value.text = "%s원" % _format_number(game_state.money)
@@ -222,6 +245,7 @@ func _refresh_top_bar() -> void:
 	inspection_value.text = "%.1f%%" % game_state.inspection_rate
 	complaint_value.text = str(game_state.complaints)
 	time_value.text = "Day %d / Tick %d" % [game_state.day, game_state.tick_in_day]
+	action_panel.set_budget(game_state.money)
 
 func _refresh_right_panel() -> void:
 	var elevator: ElevatorData = game_state.get_elevator(_selected_index)
@@ -237,8 +261,7 @@ func _refresh_right_panel() -> void:
 	upgrades_value.text = "업그레이드: %s" % elevator.installed_upgrades_text()
 	component_summary.text = _build_component_summary(elevator)
 	campaign_summary.text = "캠페인\n%s" % "\n".join(game_state.get_campaign_status_lines())
-	var goal_label: String = str(game_state.current_goal.get("label", "-"))
-	recommend_label.text = "오늘 목표: %s\n권장 액션: %s" % [goal_label, _build_recommendation(elevator)]
+	recommend_label.text = "오늘 목표: %s\n권장: %s" % [str(game_state.current_goal.get("label", "-")), _build_recommendation(elevator)]
 
 func _build_component_summary(elevator: ElevatorData) -> String:
 	var keys: Array[String] = ["door_sensor", "overload_sensor", "emergency_call", "brake_system"]
@@ -246,25 +269,30 @@ func _build_component_summary(elevator: ElevatorData) -> String:
 	for cid: String in keys:
 		if not unlock_manager.unlocked_components.has(cid):
 			continue
-		var component_name: String = game_state.component_display_name(cid)
-		var state: String = elevator.component_state_label(cid)
-		lines.append("- %s: %s" % [component_name, state])
+		lines.append("• %s %s" % [game_state.component_display_name(cid), elevator.component_state_label(cid)])
 	if lines.is_empty():
-		return "핵심 장치\n- 해금된 장치 없음"
-	return "핵심 장치\n" + "\n".join(lines)
+		return "핵심 장치\n• 해금된 장치 없음"
+	return "핵심 장치\n" + "\n".join(lines.slice(0, 3))
 
 func _build_recommendation(elevator: ElevatorData) -> String:
 	if elevator.status == "fault":
-		return "긴급수리 후 비상통화 장치 점검"
+		return "긴급수리 → 비상통화 점검"
 	if game_state.day - elevator.last_inspection_day > GameState.INSPECTION_INTERVAL_DAYS:
 		return "정기점검으로 제동·제어계 안정화"
-	if elevator.component_state_label("door_sensor") != "정상":
-		return "도어 센서 정비 + 문 끼임 주의 안내"
 	if elevator.wear > 70.0:
-		return "예방정비로 마모 및 고장 위험 완화"
+		return "예방정비로 마모 리스크 완화"
 	if game_state.complaints > 6:
-		return "안내강화 + 속도 개선으로 민원 대응"
-	return "피크 시간 대비 균형 운영 유지"
+		return "안내강화로 혼잡 민원 우선 대응"
+	return "균형 운영 유지"
+
+func _render_recent_logs() -> void:
+	for child: Node in recent_log_list.get_children():
+		child.queue_free()
+	for entry: Dictionary in _recent_logs:
+		var item: Label = Label.new()
+		item.text = "%s %s" % [entry.get("icon", "•"), entry.get("text", "")]
+		item.modulate = entry.get("color", Color.WHITE)
+		recent_log_list.add_child(item)
 
 func _open_codex() -> void:
 	round_manager.stop()
@@ -274,6 +302,9 @@ func _on_codex_unlocked(_component_id: String) -> void:
 	_open_codex()
 
 func _on_tutorial_next() -> void:
+	if _tutorial_waiting_action != "":
+		tutorial_hint.text = "먼저 안내된 실습을 완료하세요."
+		return
 	_tutorial_step += 1
 	if _tutorial_step >= _tutorial_pages.size():
 		_finish_tutorial()
@@ -289,6 +320,24 @@ func _render_tutorial_step() -> void:
 	tutorial_step_label.text = "%d / %d" % [_tutorial_step + 1, _tutorial_pages.size()]
 	tutorial_text.text = str(page.get("body", ""))
 	tutorial_next_button.text = "게임 시작" if _tutorial_step == _tutorial_pages.size() - 1 else "다음"
+	_tutorial_waiting_action = str(page.get("requires_action", ""))
+	tutorial_next_button.disabled = _tutorial_waiting_action != ""
+	tutorial_hint.text = "실습 단계: 버튼을 눌러 완료하세요." if _tutorial_waiting_action != "" else ""
+	_update_tutorial_focus(str(page.get("focus", "")))
+
+func _update_tutorial_focus(focus_id: String) -> void:
+	var target: Control = null
+	match focus_id:
+		"top": target = $Root/Layout/TopBar
+		"building": target = %BuildingView
+		"right": target = $Root/Layout/MainRow/RightPanel
+		"actions": target = %ActionPanel
+		"recommend": target = %RecommendSection
+		"logs": target = %RecentLogSection
+		_: target = $Root
+	var rect: Rect2 = target.get_global_rect()
+	tutorial_focus_frame.global_position = rect.position - Vector2(6, 6)
+	tutorial_focus_frame.size = rect.size + Vector2(12, 12)
 
 func _finish_tutorial() -> void:
 	AppState.start_with_tutorial = false
@@ -297,17 +346,14 @@ func _finish_tutorial() -> void:
 	round_manager.start()
 
 func _add_recent_log(level: String, msg: String) -> void:
-	var prefix_map: Dictionary = {
-		"warn": "[경고]",
-		"check": "[점검]",
-		"info": "[정보]"
-	}
+	var icon_map: Dictionary = {"warn": "⚠", "check": "🛠", "info": "ℹ"}
+	var color_map: Dictionary = {"warn": Color("#FFB36B"), "check": Color("#8CE0B8"), "info": Color("#9FD6FF")}
 	var safe_msg: String = msg
 	if safe_msg.length() > 34:
 		safe_msg = safe_msg.substr(0, 34) + "…"
-	_recent_logs.push_front("%s %s" % [prefix_map.get(level, "[정보]"), safe_msg])
-	if _recent_logs.size() > 5:
-		_recent_logs.resize(5)
+	_recent_logs.push_front({"icon": icon_map.get(level, "ℹ"), "text": safe_msg, "color": color_map.get(level, Color.WHITE)})
+	if _recent_logs.size() > MAX_RECENT_LOGS:
+		_recent_logs.resize(MAX_RECENT_LOGS)
 
 func _format_number(value: int) -> String:
 	var text: String = str(value)

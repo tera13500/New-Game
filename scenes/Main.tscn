@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://c7pfqyb8e1quv"]
+[gd_scene load_steps=12 format=3 uid="uid://c7pfqyb8e1quv"]
 
 [ext_resource type="Script" path="res://scripts/Main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/GameState.gd" id="2_state"]
@@ -18,10 +18,6 @@ border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
 border_color = Color(0.27, 0.45, 0.65, 1)
-corner_radius_top_left = 2
-corner_radius_top_right = 2
-corner_radius_bottom_right = 2
-corner_radius_bottom_left = 2
 content_margin_left = 10
 content_margin_top = 8
 content_margin_right = 10
@@ -34,10 +30,6 @@ border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
 border_color = Color(0.24, 0.38, 0.53, 1)
-corner_radius_top_left = 2
-corner_radius_top_right = 2
-corner_radius_bottom_right = 2
-corner_radius_bottom_left = 2
 content_margin_left = 12
 content_margin_top = 12
 content_margin_right = 12
@@ -48,8 +40,6 @@ layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
 script = ExtResource("1_main")
 
 [node name="GameState" type="Node" parent="."]
@@ -106,7 +96,7 @@ text = "예산"
 unique_name_in_owner = true
 layout_mode = 2
 text = "0"
-
+theme_override_font_sizes/font_size = 24
 [node name="SafetyCard" type="PanelContainer" parent="Root/Layout/TopBar/TopRow"]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -120,7 +110,7 @@ text = "안전"
 unique_name_in_owner = true
 layout_mode = 2
 text = "0"
-
+theme_override_font_sizes/font_size = 24
 [node name="SatisfactionCard" type="PanelContainer" parent="Root/Layout/TopBar/TopRow"]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -134,7 +124,7 @@ text = "만족"
 unique_name_in_owner = true
 layout_mode = 2
 text = "0"
-
+theme_override_font_sizes/font_size = 24
 [node name="InspectionCard" type="PanelContainer" parent="Root/Layout/TopBar/TopRow"]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -148,7 +138,7 @@ text = "점검률"
 unique_name_in_owner = true
 layout_mode = 2
 text = "0"
-
+theme_override_font_sizes/font_size = 24
 [node name="ComplaintCard" type="PanelContainer" parent="Root/Layout/TopBar/TopRow"]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -162,7 +152,7 @@ text = "민원"
 unique_name_in_owner = true
 layout_mode = 2
 text = "0"
-
+theme_override_font_sizes/font_size = 24
 [node name="TimeCard" type="PanelContainer" parent="Root/Layout/TopBar/TopRow"]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -179,7 +169,7 @@ text = "Day 1 / Tick 0"
 [node name="VersionLabel" type="Label" parent="Root/Layout/TopBar/TopRow/TimeCard/TimeVBox"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "v1.1.8"
+text = "v1.1.9"
 modulate = Color(0.62, 0.82, 1, 1)
 
 [node name="MainRow" type="HBoxContainer" parent="Root/Layout"]
@@ -194,89 +184,105 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="RightPanel" type="PanelContainer" parent="Root/Layout/MainRow"]
-custom_minimum_size = Vector2(420, 0)
+custom_minimum_size = Vector2(440, 0)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
 [node name="RightVBox" type="VBoxContainer" parent="Root/Layout/MainRow/RightPanel"]
 layout_mode = 2
-theme_override_constants/separation = 6
+theme_override_constants/separation = 8
 
-[node name="PanelTitle" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox"]
+[node name="StatusSection" type="PanelContainer" parent="Root/Layout/MainRow/RightPanel/RightVBox"]
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+[node name="StatusVBox" type="VBoxContainer" parent="Root/Layout/MainRow/RightPanel/RightVBox/StatusSection"]
+layout_mode = 2
+theme_override_constants/separation = 4
+[node name="PanelTitle" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox/StatusSection/StatusVBox"]
 layout_mode = 2
 text = "현재 상태"
-[node name="ElevatorSelector" type="OptionButton" parent="Root/Layout/MainRow/RightPanel/RightVBox"]
+[node name="ElevatorSelector" type="OptionButton" parent="Root/Layout/MainRow/RightPanel/RightVBox/StatusSection/StatusVBox"]
 unique_name_in_owner = true
 layout_mode = 2
-[node name="StatusBadge" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox"]
+[node name="StatusBadge" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox/StatusSection/StatusVBox"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "정상"
-[node name="WorkSummary" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox"]
+[node name="WorkSummary" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox/StatusSection/StatusVBox"]
 unique_name_in_owner = true
 layout_mode = 2
 autowrap_mode = 2
 text = "운행 요약"
-
-[node name="Grid" type="GridContainer" parent="Root/Layout/MainRow/RightPanel/RightVBox"]
+[node name="Grid" type="GridContainer" parent="Root/Layout/MainRow/RightPanel/RightVBox/StatusSection/StatusVBox"]
 layout_mode = 2
 columns = 2
-[node name="CurrentFloorLabel" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox/Grid"]
-layout_mode = 2
+[node name="CurrentFloorLabel" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox/StatusSection/StatusVBox/Grid"]
 text = "현재 층"
-[node name="CurrentFloorValue" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox/Grid"]
+[node name="CurrentFloorValue" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox/StatusSection/StatusVBox/Grid"]
 unique_name_in_owner = true
-layout_mode = 2
 text = "1층"
-[node name="WearLabel" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox/Grid"]
-layout_mode = 2
+[node name="WearLabel" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox/StatusSection/StatusVBox/Grid"]
 text = "마모도"
-[node name="WearValue" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox/Grid"]
+[node name="WearValue" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox/StatusSection/StatusVBox/Grid"]
 unique_name_in_owner = true
-layout_mode = 2
 text = "0%"
-[node name="RiskLabel" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox/Grid"]
-layout_mode = 2
+[node name="RiskLabel" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox/StatusSection/StatusVBox/Grid"]
 text = "고장 위험"
-[node name="RiskValue" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox/Grid"]
+[node name="RiskValue" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox/StatusSection/StatusVBox/Grid"]
 unique_name_in_owner = true
-layout_mode = 2
 text = "0%"
-[node name="InspectionDayLabel" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox/Grid"]
-layout_mode = 2
+[node name="InspectionDayLabel" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox/StatusSection/StatusVBox/Grid"]
 text = "최근 점검"
-[node name="InspectionDayValue" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox/Grid"]
+[node name="InspectionDayValue" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox/StatusSection/StatusVBox/Grid"]
 unique_name_in_owner = true
-layout_mode = 2
 text = "0일"
 
-[node name="ComponentSummary" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox"]
+[node name="ComponentSection" type="PanelContainer" parent="Root/Layout/MainRow/RightPanel/RightVBox"]
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+[node name="ComponentSummary" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox/ComponentSection"]
 unique_name_in_owner = true
 layout_mode = 2
 autowrap_mode = 2
 text = "핵심 장치"
-[node name="CampaignSummary" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox"]
+
+[node name="CampaignSection" type="PanelContainer" parent="Root/Layout/MainRow/RightPanel/RightVBox"]
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+[node name="CampaignSummary" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox/CampaignSection"]
 unique_name_in_owner = true
 layout_mode = 2
 autowrap_mode = 2
 text = "캠페인"
-[node name="UpgradesValue" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox"]
+
+[node name="UpgradeSection" type="PanelContainer" parent="Root/Layout/MainRow/RightPanel/RightVBox"]
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+[node name="UpgradesValue" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox/UpgradeSection"]
 unique_name_in_owner = true
 layout_mode = 2
 autowrap_mode = 2
 text = "업그레이드"
-[node name="RecommendLabel" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox"]
+
+[node name="RecommendSection" type="PanelContainer" parent="Root/Layout/MainRow/RightPanel/RightVBox"]
+unique_name_in_owner = true
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+[node name="RecommendLabel" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox/RecommendSection"]
 unique_name_in_owner = true
 layout_mode = 2
 autowrap_mode = 2
 text = "권장 액션"
 
-[node name="RecentLogLabel" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox"]
+[node name="RecentLogSection" type="PanelContainer" parent="Root/Layout/MainRow/RightPanel/RightVBox"]
+unique_name_in_owner = true
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+[node name="RecentLogVBox" type="VBoxContainer" parent="Root/Layout/MainRow/RightPanel/RightVBox/RecentLogSection"]
+layout_mode = 2
+theme_override_constants/separation = 4
+[node name="RecentLogTitle" type="Label" parent="Root/Layout/MainRow/RightPanel/RightVBox/RecentLogSection/RecentLogVBox"]
+layout_mode = 2
+text = "최근 로그"
+[node name="RecentLogList" type="VBoxContainer" parent="Root/Layout/MainRow/RightPanel/RightVBox/RecentLogSection/RecentLogVBox"]
 unique_name_in_owner = true
 layout_mode = 2
-autowrap_mode = 2
-text = "최근 로그"
+theme_override_constants/separation = 2
 
 [node name="ActionPanel" parent="Root/Layout" instance=ExtResource("6_actions")]
 unique_name_in_owner = true
@@ -296,13 +302,21 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0, 0, 0, 0.7)
+color = Color(0, 0, 0, 0.72)
+
+[node name="TutorialFocusFrame" type="PanelContainer" parent="TutorialOverlay"]
+unique_name_in_owner = true
+offset_left = 80.0
+offset_top = 80.0
+offset_right = 400.0
+offset_bottom = 240.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
 
 [node name="TutorialPanel" type="PanelContainer" parent="TutorialOverlay"]
-offset_left = 450.0
+offset_left = 480.0
 offset_top = 220.0
-offset_right = 1470.0
-offset_bottom = 760.0
+offset_right = 1450.0
+offset_bottom = 770.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
 [node name="TutorialVBox" type="VBoxContainer" parent="TutorialOverlay/TutorialPanel"]
@@ -324,6 +338,12 @@ unique_name_in_owner = true
 layout_mode = 2
 autowrap_mode = 2
 text = "튜토리얼 내용"
+
+[node name="TutorialHint" type="Label" parent="TutorialOverlay/TutorialPanel/TutorialVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+modulate = Color(1, 0.88, 0.55, 1)
+text = ""
 
 [node name="TutorialButtons" type="HBoxContainer" parent="TutorialOverlay/TutorialPanel/TutorialVBox"]
 layout_mode = 2

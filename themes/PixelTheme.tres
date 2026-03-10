@@ -1,0 +1,9 @@
+[gd_resource type="Theme" format=3]
+
+[resource]
+default_font_size = 18
+Button/font_sizes/font_size = 18
+Label/font_sizes/font_size = 18
+HeadingLabel/font_sizes/font_size = 34
+SubTitleLabel/font_sizes/font_size = 24
+SmallLabel/font_sizes/font_size = 14

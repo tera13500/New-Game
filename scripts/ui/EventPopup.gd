@@ -14,20 +14,22 @@ func show_event(event_data: EventData) -> void:
 	%PopupDesc.text = event_data.description
 	%Severity.text = _severity_label(event_data)
 	%Severity.modulate = _severity_color(event_data)
-	var target_text: String = "전체" if event_data.target_elevator_id < 0 else "%d호기" % event_data.target_elevator_id
+	var target_text: String = "[대상: 전체]" if event_data.target_elevator_id < 0 else "[대상: %d호기]" % event_data.target_elevator_id
 	var pretty_tags: Array[String] = []
 	for cid: String in event_data.component_tags:
 		var info: Array = GameState.COMPONENT_CATALOG.get(cid, [cid])
 		pretty_tags.append(str(info[0]))
-	%Tags.text = "대상: %s  |  장치: %s" % [target_text, ("없음" if pretty_tags.is_empty() else ", ".join(pretty_tags.slice(0, 3)))]
+	var chip_text: String = "[장치: %s]" % ("없음" if pretty_tags.is_empty() else " · ".join(pretty_tags.slice(0, 3)))
+	%Tags.text = "%s %s" % [target_text, chip_text]
 	%Recommend.text = "권장: %s" % (event_data.recommended_action if event_data.recommended_action != "" else "상황 판단")
 	for child: Node in %OptionList.get_children():
 		child.queue_free()
 	for option: Dictionary in event_data.options:
 		var button: Button = Button.new()
-		button.text = str(option.get("label", "선택"))
-		button.custom_minimum_size = Vector2(0, 40)
+		button.text = "%s\n%s" % [str(option.get("label", "선택")), _effect_hint(option.get("effect", {}))]
+		button.custom_minimum_size = Vector2(0, 48)
 		button.clip_text = true
+		button.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		button.pressed.connect(func() -> void:
 			var payload: Dictionary = option.get("effect", {}).duplicate()
 			if option.has("upgrade_id"):
@@ -56,3 +58,15 @@ func _severity_color(event_data: EventData) -> Color:
 	if event_data.severity in ["warning", "risk", "fault"]:
 		return Color("#FF9870")
 	return Color("#85D7FF")
+
+func _effect_hint(effect: Dictionary) -> String:
+	var parts: Array[String] = []
+	if effect.has("money"):
+		parts.append("예산 %s" % int(effect["money"]))
+	if effect.has("safety"):
+		parts.append("안전 %+0.1f" % float(effect["safety"]))
+	if effect.has("satisfaction"):
+		parts.append("만족 %+0.1f" % float(effect["satisfaction"]))
+	if parts.is_empty():
+		return "영향: 상태 변화"
+	return "영향: " + ", ".join(parts)

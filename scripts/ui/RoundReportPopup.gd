@@ -22,7 +22,7 @@ func show_report(summary: Dictionary, game_state: GameState) -> void:
 		summary.get("goal_text", "-"),
 		"성공 +%d원" % int(goal_result.get("reward", 0)) if bool(goal_result.get("success", false)) else "실패"
 	]
-	%Commentary.text = "%s\n- 예방 성과: %s\n- 핵심 장치: %s\n- 놓친 신호: %s\n- 다음 권장 액션: %s" % [
+	%Commentary.text = "%s\n핵심 포인트\n- 예방 성과: %s\n- 취약 장치: %s\n- 놓친 신호: %s\n- 다음 권장 액션: %s" % [
 		goal_line,
 		summary.get("best_prevention", "-"),
 		summary.get("critical_component", "-"),
